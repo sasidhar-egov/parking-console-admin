@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
 export const Container = styled.div`
   min-height: 100vh;
@@ -219,7 +220,7 @@ export const LoginCard = styled.div`
   }
 `;
 
-const ModalOverlay = styled.div`
+export const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
   left: 0;
@@ -232,7 +233,7 @@ const ModalOverlay = styled.div`
   z-index: 1000;
 `;
 
-const ModalContent = styled.div`
+export const ModalContent = styled.div`
   background: white;
   border-radius: 12px;
   padding: 2rem;
@@ -242,7 +243,7 @@ const ModalContent = styled.div`
   position: relative;
 `;
 
-const CloseButton = styled.button`
+export const CloseButton = styled.button`
   position: absolute;
   top: 1rem;
   right: 1rem;
@@ -257,13 +258,13 @@ const CloseButton = styled.button`
   }
 `;
 
-const Title = styled.h2`
+export const Title11 = styled.h2`
   color: #333;
   margin-bottom: 1.5rem;
   text-align: center;
 `;
 
-const SlotInfo = styled.div`
+export const SlotInfo = styled.div`
   background: #f8f9fa;
   padding: 1rem;
   border-radius: 8px;
@@ -271,25 +272,26 @@ const SlotInfo = styled.div`
   text-align: center;
 `;
 
-const SlotNumber = styled.div`
+export const SlotNumber1= styled.div`
   font-size: 1.5rem;
   font-weight: bold;
   color: #4caf50;
   margin-bottom: 0.5rem;
 `;
 
-const FormGroup = styled.div`
+export const FormGroup = styled.div`
   margin-bottom: 1.5rem;
 `;
 
-const Label = styled.label`
+export const Label = styled.label`
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
   color: #333;
 `;
 
-const Input = styled.input`
+// FIX: Renamed from FormInput
+export const ModalInput = styled.input`
   width: 100%;
   padding: 0.75rem;
   border: 2px solid #e1e5e9;
@@ -303,13 +305,14 @@ const Input = styled.input`
   }
 `;
 
-const ButtonGroup = styled.div`
+export const ButtonGroup = styled.div`
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
 `;
 
-const Button = styled.button`
+// Base button for Modal, can be extended
+export const ModalButtonBase = styled.button`
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 8px;
@@ -319,7 +322,7 @@ const Button = styled.button`
   transition: all 0.3s ease;
 `;
 
-const CancelButton = styled(Button)`
+export const CancelButton = styled(ModalButtonBase)`
   background: #f8f9fa;
   color: #666;
   border: 2px solid #e1e5e9;
@@ -330,7 +333,7 @@ const CancelButton = styled(Button)`
   }
 `;
 
-const ConfirmButton = styled(Button)`
+export const ConfirmButton = styled(ModalButtonBase)`
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   
@@ -347,7 +350,7 @@ const ConfirmButton = styled(Button)`
   }
 `;
 
-const ErrorMessage = styled.div`
+export const ErrorMessage1 = styled.div`
   background: #fee;
   color: #c33;
   padding: 12px;
@@ -358,15 +361,15 @@ const ErrorMessage = styled.div`
 `;
 
 
-const Container = styled.div`
+export const Container2 = styled.div`
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  min-height: calc(100vh - 80px);
+  min-height: calc(100vh - 80px); /* Assuming 80px navbar height */
 `;
 
-const Title = styled.h1`
+export const Title1 = styled.h1`
   text-align: center;
   color: #333;
   margin-bottom: 2rem;
@@ -374,14 +377,14 @@ const Title = styled.h1`
   font-weight: bold;
 `;
 
-const SlotsGrid = styled.div`
+export const SlotsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1.5rem;
   margin-top: 2rem;
 `;
 
-const SlotCard = styled.div`
+export const SlotCard = styled.div`
   background: ${props => props.occupied ? '#ffebee' : '#e8f5e8'};
   border: 2px solid ${props => props.occupied ? '#f44336' : '#4caf50'};
   border-radius: 12px;
@@ -397,39 +400,39 @@ const SlotCard = styled.div`
   }
 `;
 
-const SlotNumber = styled.h3`
+export const SlotNumber = styled.h3`
   font-size: 1.5rem;
   margin: 0 0 1rem 0;
   color: ${props => props.occupied ? '#d32f2f' : '#388e3c'};
 `;
 
-const SlotStatus = styled.div`
+export const SlotStatus = styled.div`
   font-weight: bold;
   color: ${props => props.occupied ? '#d32f2f' : '#388e3c'};
   margin-bottom: 0.5rem;
 `;
 
-const VehicleInfo = styled.div`
+export const VehicleInfo = styled.div`
   font-size: 0.9rem;
   color: #666;
   margin-top: 0.5rem;
 `;
 
-const LoadingMessage = styled.div`
+export const LoadingMessage1 = styled.div`
   text-align: center;
   font-size: 1.2rem;
   color: #666;
   margin-top: 3rem;
 `;
 
-const NotificationContainer = styled.div`
+export const NotificationContainer = styled.div`
   position: fixed;
   top: 100px;
   right: 20px;
   z-index: 1000;
 `;
 
-const Notification = styled.div`
+export const Notification = styled.div`
   background: #4caf50;
   color: white;
   padding: 1rem 1.5rem;
@@ -449,8 +452,9 @@ const Notification = styled.div`
   }
 `;
 
+// --- Navbar Styles ---
 
-const NavbarContainer = styled.nav`
+export const NavbarContainer = styled.nav`
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 1rem 2rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -459,7 +463,7 @@ const NavbarContainer = styled.nav`
   z-index: 1000;
 `;
 
-const NavContent = styled.div`
+export const NavContent = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -467,20 +471,21 @@ const NavContent = styled.div`
   margin: 0 auto;
 `;
 
-const Logo = styled.h1`
+export const Logo = styled.h1`
   color: white;
   font-size: 1.5rem;
   font-weight: bold;
   margin: 0;
 `;
 
-const NavLinks = styled.div`
+export const NavLinks = styled.div`
   display: flex;
   gap: 2rem;
   align-items: center;
 `;
 
-const NavLink = styled(Link)`
+// CRITICAL FIX: `Link` must be imported from your routing library
+export const NavLink = styled(Link)`
   color: white;
   text-decoration: none;
   font-weight: 500;
@@ -494,18 +499,18 @@ const NavLink = styled(Link)`
   }
 `;
 
-const UserInfo = styled.div`
+export const UserInfo = styled.div`
   color: white;
   display: flex;
   align-items: center;
   gap: 1rem;
 `;
 
-const UserName = styled.span`
+export const UserName = styled.span`
   font-weight: 500;
 `;
 
-const LogoutButton = styled.button`
+export const LogoutButton = styled.button`
   background: rgba(255, 255, 255, 0.2);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -521,7 +526,7 @@ const LogoutButton = styled.button`
   }
 `;
 
-const Container = styled.div`
+export const Container1 = styled.div`
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
@@ -529,32 +534,25 @@ const Container = styled.div`
   min-height: calc(100vh - 80px);
 `;
 
-const Title = styled.h1`
-  text-align: center;
-  color: #333;
-  margin-bottom: 2rem;
-  font-size: 2rem;
-  font-weight: bold;
-`;
 
-const TableContainer = styled.div`
+export const TableContainer = styled.div`
   background: white;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 `;
 
-const Table = styled.table`
+export const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
 `;
 
-const TableHeader = styled.thead`
+export const TableHeader = styled.thead`
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
 `;
 
-const TableHeaderCell = styled.th`
+export const TableHeaderCell = styled.th`
   padding: 1rem;
   text-align: left;
   font-weight: 600;
@@ -563,9 +561,9 @@ const TableHeaderCell = styled.th`
   letter-spacing: 0.5px;
 `;
 
-const TableBody = styled.tbody``;
+export const TableBody = styled.tbody``;
 
-const TableRow = styled.tr`
+export const TableRow = styled.tr`
   border-bottom: 1px solid #e1e5e9;
   transition: background-color 0.2s ease;
   
@@ -578,13 +576,13 @@ const TableRow = styled.tr`
   }
 `;
 
-const TableCell = styled.td`
+export const TableCell = styled.td`
   padding: 1rem;
   color: #333;
   font-size: 0.9rem;
 `;
 
-const StatusBadge = styled.span`
+export const StatusBadge = styled.span`
   display: inline-block;
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
@@ -617,28 +615,28 @@ const StatusBadge = styled.span`
   }}
 `;
 
-const EmptyState = styled.div`
+export const EmptyState = styled.div`
   text-align: center;
   padding: 3rem;
   color: #666;
 `;
 
-const EmptyIcon = styled.div`
+export const EmptyIcon = styled.div`
   font-size: 4rem;
   margin-bottom: 1rem;
 `;
 
-const EmptyMessage = styled.h3`
+export const EmptyMessage = styled.h3`
   margin-bottom: 0.5rem;
   color: #333;
 `;
 
-const EmptySubtext = styled.p`
+export const EmptySubtext = styled.p`
   color: #666;
   font-size: 0.9rem;
 `;
 
-const LoadingMessage = styled.div`
+export const LoadingMessage = styled.div`
   text-align: center;
   font-size: 1.2rem;
   color: #666;

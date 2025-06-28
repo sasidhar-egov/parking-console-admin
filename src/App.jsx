@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './components/Login';
 import ForgotPassword from './components/ForgetPassword';
 import Register from './components/Register';
+import CustomerHome from './components/CustomerComponents/CustomerHome';
+import CustomerOrders from './components/CustomerComponents/CustomerOrders';
 
 const App = () => {
   return (
@@ -11,10 +13,10 @@ const App = () => {
         <Route path='/forget-password' element={<ForgotPassword />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<div>hiiii</div>} />
-        <Routes path="/customer/*">
-          <Route path="/home" element={<CustomerHome />} />
-          <Route path="/orders" element={<CustomerOrders />} />
-        </Routes>
+        <Route path="/customer/*">
+          <Route path="home" element={<CustomerHome />} />
+          <Route path="orders" element={<CustomerOrders />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

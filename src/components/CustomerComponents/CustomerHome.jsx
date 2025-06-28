@@ -1,113 +1,287 @@
-import React, { useState, useEffect } from 'react';
+import React, { useReducer, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { db } from '../db';
-import { useAuth } from '../context/AuthContext';
-import BookingModal from './BookingModal';
+import CustomerNavbarComponent from './CustomerNavbar';
+// Styled Components with customer prefix
+const CustomerHomeContainer = styled.div`
+  padding: 20px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+`;
 
+const CustomerTitle = styled.h1`
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+  font-size: 2rem;
+`;
 
+const CustomerSlotsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 15px;
+  max-width: 800px;
+  margin: 0 auto;
+`;
 
-const CustomerHome = () => {
-  const [slots, setSlots] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedSlot, setSelectedSlot] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [notification, setNotification] = useState('');
-  const { authUser } = useAuth();
+const CustomerSlotCard = styled.div`
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: ${props => props.available ? 'pointer' : 'not-allowed'};
+  background-color: ${props => props.available ? '#4CAF50' : '#9E9E9E'};
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
 
-  const fetchSlots = async () => {
-    try {
-      const allSlots = await db.slots.toArray();
-      setSlots(allSlots);
-    } catch (error) {
-      console.error('Error fetching slots:', error);
-    } finally {
-      setLoading(false);
+  &:hover {
+    transform: ${props => props.available ? 'scale(1.05)' : 'none'};
+    border-color: ${props => props.available ? '#2E7D32' : 'transparent'};
+  }
+`;
+
+const CustomerSlotNumber = styled.div`
+  font-size: 18px;
+  margin-bottom: 5px;
+`;
+
+const CustomerSlotStatus = styled.p`
+  font-size: 12px;
+  opacity: 0.8;
+`;
+
+const CustomerModal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+`;
+
+const CustomerModalContent = styled.div`
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  width: 90%;
+`;
+
+const CustomerModalTitle = styled.h2`
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+`;
+
+const CustomerModalText = styled.p`
+  color: #666;
+  margin-bottom: 25px;
+  font-size: 16px;
+`;
+
+const CustomerButton = styled.button`
+  padding: 12px 24px;
+  margin: 0 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &.primary {
+    background-color: #4CAF50;
+    color: white;
+    &:hover {
+      background-color: #45a049;
     }
-  };
+  }
 
+  &.secondary {
+    background-color: #f0f0f0;
+    color: #333;
+    &:hover {
+      background-color: #e0e0e0;
+    }
+  }
+`;
+
+const CustomerAlert = styled.div`
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #4CAF50;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 1001;
+  font-weight: bold;
+`;
+
+// Reducer for managing state
+const initialState = {
+  slots: [],
+  selectedSlot: null,
+  showModal: false,
+  showAlert: false,
+  loading: true
+};
+
+const customerReducer = (state, action) => {
+  switch (action.type) {
+    case 'SET_SLOTS':
+      return { ...state, slots: action.payload, loading: false };
+    case 'SELECT_SLOT':
+      return { ...state, selectedSlot: action.payload, showModal: true };
+    case 'CLOSE_MODAL':
+      return { ...state, selectedSlot: null, showModal: false };
+    case 'SHOW_ALERT':
+      return { ...state, showAlert: true };
+    case 'HIDE_ALERT':
+      return { ...state, showAlert: false };
+    case 'BOOK_SLOT':
+      return {
+        ...state,
+        slots: state.slots.map(slot =>
+          slot.id === action.payload ? { ...slot, occupied: true } : slot
+        ),
+        showModal: false,
+        selectedSlot: null
+      };
+    default:
+      return state;
+  }
+};
+
+const CustomerHomePage = () => {
+  const [state, dispatch] = useReducer(customerReducer, initialState);
+
+  // Mock data - replace with actual Dexie db calls
   useEffect(() => {
+    const fetchSlots = async () => {
+      // Simulate API call
+      setTimeout(() => {
+        const mockSlots = Array.from({ length: 20 }, (_, i) => ({
+          id: i + 1,
+          number: `P${String(i + 1).padStart(3, '0')}`,
+          occupied: Math.random() > 0.6,
+          vehicleNumber: null,
+          userName: null,
+          entryTime: null
+        }));
+        
+        dispatch({ type: 'SET_SLOTS', payload: mockSlots });
+      }, 1000);
+    };
+
     fetchSlots();
-    
-    // Poll for updates every 5 seconds
-    const interval = setInterval(fetchSlots, 5000);
-    return () => clearInterval(interval);
   }, []);
 
   const handleSlotClick = (slot) => {
-    if (slot.occupied) return;
-    
-    setSelectedSlot(slot);
-    setShowModal(true);
+    if (!slot.occupied) {
+      dispatch({ type: 'SELECT_SLOT', payload: slot });
+    }
   };
 
-  const handleBookingSuccess = () => {
-    setShowModal(false);
-    setSelectedSlot(null);
-    setNotification('Slot booked successfully! 🎉');
-    fetchSlots(); // Refresh slots
-    
-    // Hide notification after 3 seconds
-    setTimeout(() => {
-      setNotification('');
-    }, 3000);
+  const handleBookSlot = async () => {
+    if (state.selectedSlot) {
+      // Here you would normally call your Dexie db to book the slot
+      // const booking = {
+      //   slotId: state.selectedSlot.id,
+      //   vehicleNumber: 'VEHICLE123', // You'd get this from user input
+      //   userName: currentUser.username,
+      //   entryTime: new Date().toISOString(),
+      //   status: 'booked'
+      // };
+      // await db.bookings.add(booking);
+      // await db.slots.update(state.selectedSlot.id, { occupied: true });
+
+      dispatch({ type: 'BOOK_SLOT', payload: state.selectedSlot.id });
+      dispatch({ type: 'SHOW_ALERT' });
+      
+      setTimeout(() => {
+        dispatch({ type: 'HIDE_ALERT' });
+      }, 3000);
+    }
   };
 
-  const handleModalClose = () => {
-    setShowModal(false);
-    setSelectedSlot(null);
+  const handleCloseModal = () => {
+    dispatch({ type: 'CLOSE_MODAL' });
   };
 
-  if (loading) {
+  if (state.loading) {
     return (
-      <Container>
-        <LoadingMessage>Loading parking slots...</LoadingMessage>
-      </Container>
+      <CustomerHomeContainer>
+        <CustomerNavbarComponent/>
+        <CustomerTitle>Loading parking slots...</CustomerTitle>
+      </CustomerHomeContainer>
     );
   }
 
   return (
-    <Container>
-      <Title>Available Parking Slots</Title>
+    <CustomerHomeContainer>
+        <CustomerNavbarComponent/>
+      <CustomerTitle>Available Parking Slots</CustomerTitle>
       
-      <SlotsGrid>
-        {slots.map((slot) => (
-          <SlotCard
+      <CustomerSlotsGrid>
+        {state.slots.map((slot) => (
+          <CustomerSlotCard
             key={slot.id}
-            occupied={slot.occupied}
+            available={!slot.occupied}
             onClick={() => handleSlotClick(slot)}
           >
-            <SlotNumber occupied={slot.occupied}>
-              Slot {slot.number}
-            </SlotNumber>
-            <SlotStatus occupied={slot.occupied}>
-              {slot.occupied ? '🚫 Occupied' : '✅ Available'}
-            </SlotStatus>
-            {slot.occupied && (
-              <VehicleInfo>
-                <div>Vehicle: {slot.vehicleNumber}</div>
-                <div>User: {slot.userName}</div>
-              </VehicleInfo>
-            )}
-          </SlotCard>
+            <CustomerSlotNumber>{slot.number}</CustomerSlotNumber>
+            <CustomerSlotStatus>
+              {slot.occupied ? 'Occupied' : 'Available'}
+            </CustomerSlotStatus>
+          </CustomerSlotCard>
         ))}
-      </SlotsGrid>
+      </CustomerSlotsGrid>
 
-      {showModal && (
-        <BookingModal
-          slot={selectedSlot}
-          user={authUser}
-          onSuccess={handleBookingSuccess}
-          onClose={handleModalClose}
-        />
+      {state.showModal && state.selectedSlot && (
+        <CustomerModal onClick={handleCloseModal}>
+          <CustomerModalContent onClick={(e) => e.stopPropagation()}>
+            <CustomerModalTitle>Book Parking Slot</CustomerModalTitle>
+            <CustomerModalText>
+              Do you want to book parking slot {state.selectedSlot.number}?
+            </CustomerModalText>
+            <div>
+              <CustomerButton 
+                className="primary" 
+                onClick={handleBookSlot}
+              >
+                Book Now
+              </CustomerButton>
+              <CustomerButton 
+                className="secondary" 
+                onClick={handleCloseModal}
+              >
+                Cancel
+              </CustomerButton>
+            </div>
+          </CustomerModalContent>
+        </CustomerModal>
       )}
 
-      {notification && (
-        <NotificationContainer>
-          <Notification>{notification}</Notification>
-        </NotificationContainer>
+      {state.showAlert && (
+        <CustomerAlert>
+          Slot booked successfully! 🎉
+        </CustomerAlert>
       )}
-    </Container>
+    </CustomerHomeContainer>
   );
 };
 
-export default CustomerHome;
+export default CustomerHomePage;
