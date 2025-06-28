@@ -1,6 +1,6 @@
 // components/VehicleExit.js
 import React from 'react';
-import { useParkingContext } from '../context/ParkingContext';
+import { useParkingContext } from '../context/AuthContext';
 import { Table, Th, Td, Button } from '../styles/StyledComponents';
 
 const VehicleExit = () => {

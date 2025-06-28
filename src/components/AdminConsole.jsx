@@ -1,6 +1,6 @@
 // components/AdminConsole.js
 import React from 'react';
-import { useParkingContext } from '../context/ParkingContext';
+import { useParkingContext } from '../context/AuthContext';
 import { StatsGrid, StatsCard } from '../styles/StyledComponents';
 import ParkingHistory from './ParkingHistory';
 
