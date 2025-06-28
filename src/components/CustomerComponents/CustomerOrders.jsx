@@ -1,4 +1,5 @@
 import React, { useReducer, useEffect } from 'react';
+import { db } from '../../data/db';
 import styled from 'styled-components';
 
 // Styled Components with customer prefix
@@ -82,7 +83,7 @@ const CustomerOrderStatus = styled.span`
   letter-spacing: 0.5px;
   
   ${props => {
-    switch(props.status) {
+    switch (props.status) {
       case 'active':
         return `
           background: #4CAF50;
@@ -239,8 +240,8 @@ const customerOrdersReducer = (state, action) => {
       return {
         ...state,
         orders: state.orders.map(order =>
-          order.id === action.payload 
-            ? { ...order, status: 'cancelled' } 
+          order.id === action.payload
+            ? { ...order, status: 'cancelled' }
             : order
         )
       };
@@ -248,8 +249,8 @@ const customerOrdersReducer = (state, action) => {
       return {
         ...state,
         orders: state.orders.map(order =>
-          order.id === action.payload 
-            ? { ...order, exitTime: action.newExitTime } 
+          order.id === action.payload
+            ? { ...order, exitTime: action.newExitTime }
             : order
         )
       };
@@ -267,78 +268,43 @@ const CustomerOrdersPage = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        // Mock data - replace with actual Dexie db calls
-        // const orders = await db.bookings.where('userName').equals(currentUser.username).toArray();
-        
-        setTimeout(() => {
-          const mockOrders = [
-            {
-              id: 1,
-              slotId: 5,
-              slotNumber: 'P005',
-              vehicleNumber: 'KA01MN1234',
-              userName: 'customer1',
-              entryTime: '2025-06-28T10:30:00.000Z',
-              exitTime: '2025-06-28T14:30:00.000Z',
-              status: 'active',
-              duration: '4 hours',
-              amount: 120
-            },
-            {
-              id: 2,
-              slotId: 12,
-              slotNumber: 'P012',
-              vehicleNumber: 'KA02AB5678',
-              userName: 'customer1',
-              entryTime: '2025-06-27T09:00:00.000Z',
-              exitTime: '2025-06-27T18:00:00.000Z',
-              status: 'completed',
-              duration: '9 hours',
-              amount: 270
-            },
-            {
-              id: 3,
-              slotId: 8,
-              slotNumber: 'P008',
-              vehicleNumber: 'KA03CD9012',
-              userName: 'customer1',
-              entryTime: '2025-06-26T14:15:00.000Z',
-              exitTime: '2025-06-26T16:15:00.000Z',
-              status: 'cancelled',
-              duration: '2 hours',
-              amount: 60
-            }
-          ];
-          
-          dispatch({ type: 'SET_ORDERS', payload: mockOrders });
-        }, 1000);
+        const orders = await db.bookings
+          .where('userName')
+          .equals(localStorage.getItem("username"))
+          .reverse() // optional: newest first
+          .toArray();
+
+        dispatch({ type: 'SET_ORDERS', payload: orders });
       } catch (error) {
         dispatch({ type: 'SET_ERROR', payload: error.message });
       }
     };
 
     fetchOrders();
-  }, [currentUser.username]);
+  }, );
 
   const handleCancelOrder = async (orderId) => {
-    try {
-      // Here you would update the database
-      // await db.bookings.update(orderId, { status: 'cancelled' });
-      // await db.slots.update(order.slotId, { occupied: false });
-      
-      dispatch({ type: 'CANCEL_ORDER', payload: orderId });
-    } catch (error) {
-      console.error('Error cancelling order:', error);
-    }
-  };
+  try {
+    const order = await db.bookings.get(orderId);
+    if (!order) return;
+
+    await db.bookings.update(orderId, { status: 'cancelled' });
+    await db.slots.update(order.slotId, { occupied: false });
+
+    dispatch({ type: 'CANCEL_ORDER', payload: orderId });
+  } catch (error) {
+    console.error('Error cancelling order:', error);
+  }
+};
+
 
   const handleExtendOrder = async (orderId) => {
     try {
       const newExitTime = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(); // Extend by 2 hours
-      
+
       // Here you would update the database
       // await db.bookings.update(orderId, { exitTime: newExitTime });
-      
+
       dispatch({ type: 'EXTEND_ORDER', payload: orderId, newExitTime });
     } catch (error) {
       console.error('Error extending order:', error);
@@ -383,7 +349,7 @@ const CustomerOrdersPage = () => {
   return (
     <CustomerOrdersContainer>
       <CustomerOrdersTitle>My Orders</CustomerOrdersTitle>
-      
+
       <CustomerOrdersGrid>
         {state.orders.map((order) => (
           <CustomerOrderCard key={order.id}>
@@ -428,13 +394,13 @@ const CustomerOrdersPage = () => {
 
             {order.status === 'active' && (
               <CustomerOrderActions>
-                <CustomerOrderButton 
+                <CustomerOrderButton
                   className="extend"
                   onClick={() => handleExtendOrder(order.id)}
                 >
                   Extend Time
                 </CustomerOrderButton>
-                <CustomerOrderButton 
+                <CustomerOrderButton
                   className="cancel"
                   onClick={() => handleCancelOrder(order.id)}
                 >

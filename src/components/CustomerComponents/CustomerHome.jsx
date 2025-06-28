@@ -1,4 +1,5 @@
-import React, { useReducer, useEffect, useState } from 'react';
+import React, { useReducer, useEffect } from 'react';
+import { db } from '../../data/db';
 import styled from 'styled-components';
 import CustomerNavbarComponent from './CustomerNavbar';
 // Styled Components with customer prefix
@@ -170,24 +171,32 @@ const CustomerHomePage = () => {
 
   // Mock data - replace with actual Dexie db calls
   useEffect(() => {
-    const fetchSlots = async () => {
-      // Simulate API call
-      setTimeout(() => {
-        const mockSlots = Array.from({ length: 20 }, (_, i) => ({
-          id: i + 1,
+  const fetchSlots = async () => {
+    try {
+      const allSlots = await db.slots.toArray();
+
+      // Optional: If database is empty, you can prepopulate
+      if (allSlots.length === 0) {
+        const defaultSlots = Array.from({ length: 20 }, (_, i) => ({
           number: `P${String(i + 1).padStart(3, '0')}`,
-          occupied: Math.random() > 0.6,
+          occupied: false,
           vehicleNumber: null,
           userName: null,
           entryTime: null
         }));
-        
-        dispatch({ type: 'SET_SLOTS', payload: mockSlots });
-      }, 1000);
-    };
+        await db.slots.bulkAdd(defaultSlots);
+        dispatch({ type: 'SET_SLOTS', payload: await db.slots.toArray() });
+      } else {
+        dispatch({ type: 'SET_SLOTS', payload: allSlots });
+      }
+    } catch (error) {
+      console.error("Error fetching slots from DB:", error);
+    }
+  };
 
-    fetchSlots();
-  }, []);
+  fetchSlots();
+}, []);
+
 
   const handleSlotClick = (slot) => {
     if (!slot.occupied) {
@@ -196,26 +205,43 @@ const CustomerHomePage = () => {
   };
 
   const handleBookSlot = async () => {
-    if (state.selectedSlot) {
-      // Here you would normally call your Dexie db to book the slot
-      // const booking = {
-      //   slotId: state.selectedSlot.id,
-      //   vehicleNumber: 'VEHICLE123', // You'd get this from user input
-      //   userName: currentUser.username,
-      //   entryTime: new Date().toISOString(),
-      //   status: 'booked'
-      // };
-      // await db.bookings.add(booking);
-      // await db.slots.update(state.selectedSlot.id, { occupied: true });
+  if (state.selectedSlot) {
+    try {
+      const now = new Date().toISOString();
+      const vehicleNumber = 'VEHICLE123'; // Replace with user input
+      const userName = 'some_user';       // Replace with current user
+
+      await db.slots.update(state.selectedSlot.id, {
+        occupied: true,
+        vehicleNumber,
+        userName,
+        entryTime: now
+      });
+
+      await db.bookings.add({
+        slotId: state.selectedSlot.id,
+        slotNumber: state.selectedSlot.number,
+        vehicleNumber,
+        userName,
+        entryTime: now,
+        exitTime: null,
+        status: 'booked',
+        duration: null,
+        amount: null
+      });
 
       dispatch({ type: 'BOOK_SLOT', payload: state.selectedSlot.id });
       dispatch({ type: 'SHOW_ALERT' });
-      
+
       setTimeout(() => {
         dispatch({ type: 'HIDE_ALERT' });
       }, 3000);
+    } catch (err) {
+      console.error("Booking failed:", err);
     }
-  };
+  }
+};
+
 
   const handleCloseModal = () => {
     dispatch({ type: 'CLOSE_MODAL' });

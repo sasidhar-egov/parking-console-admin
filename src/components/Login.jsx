@@ -84,17 +84,17 @@ const Login = () => {
         .where('username')
         .equals(state.username.toLowerCase())
         .first();
-
-      if (!user) {
-        dispatch({ type: 'SET_ERROR', payload: 'Invalid username or password' });
-        return;
-      }
-
-      // Check if password exists and compare
-      if (!user.password) {
-        dispatch({ type: 'SET_ERROR', payload: 'Password not set for this account. Please contact admin.' });
-        return;
-      }
+        if (!user) {
+          dispatch({ type: 'SET_ERROR', payload: 'Invalid username or password' });
+          return;
+        }
+        
+        // Check if password exists and compare
+        if (!user.password) {
+          dispatch({ type: 'SET_ERROR', payload: 'Password not set for this account. Please contact admin.' });
+          return;
+        }
+        console.log("usernjfjhhj",state.password,user.password);
 
       const isPasswordValid = await comparePassword(state.password, user.password);
 
@@ -108,6 +108,7 @@ const Login = () => {
         name: user.name,
         role: user.role,
       });
+      localStorage.setItem("username",user.username)
 
       dispatch({ type: 'SET_SUCCESS', payload: `Welcome back, ${user.name}!` });
       setTimeout(() => {

@@ -4,8 +4,22 @@ import ForgotPassword from './components/ForgetPassword';
 import Register from './components/Register';
 import CustomerHome from './components/CustomerComponents/CustomerHome';
 import CustomerOrders from './components/CustomerComponents/CustomerOrders';
+import { db, clearAllData, initializeDummyData } from './data/db';
+import { useEffect } from 'react';
 
 const App = () => {
+  const fetchDummyData = async () => {
+    const userCount = await db.users.count();
+    console.log(userCount,"hii");
+    if (userCount === 0) {
+      clearAllData()
+      clearAllData("ftechded")
+      initializeDummyData()
+    }
+  }
+  useEffect(() => {
+    fetchDummyData()
+  }, [])
   return (
     <BrowserRouter>
       <Routes>

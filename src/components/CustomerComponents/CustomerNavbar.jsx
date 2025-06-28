@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const CustomerNavbar = styled.nav`
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -171,8 +172,9 @@ const CustomerMobileToggle = styled.button`
 `;
 
 const CustomerNavbarComponent = () => {
-    const {authUser}=useAuth()
-    console.log(authUser);
+  const navigate = useNavigate()
+  const { authUser } = useAuth()
+  console.log(authUser);
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleMobileMenu = () => {
@@ -201,7 +203,7 @@ const CustomerNavbarComponent = () => {
           <CustomerNavLink onClick={() => console.log('Navigate to home')}>
             Home
           </CustomerNavLink>
-          <CustomerNavLink onClick={() => console.log('Navigate to orders')}>
+          <CustomerNavLink onClick={() => navigate("/customer/orders")}>
             My Orders
           </CustomerNavLink>
           <CustomerNavLink onClick={() => console.log('Navigate to profile')}>
