@@ -1,13 +1,16 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useEffect,useContext } from 'react';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [authUser, setAuthUser] = useState(null); // { name, role }
 
-  const login = (userData) => {
-    setAuthUser(userData); // e.g. { name: 'Sasi', role: 'admin' }
+  const login = async (userData) => {
+    console.log("hiiiiiii dhcb");
+    await setAuthUser(prev => ({ ...prev, ...userData }));
+    console.log(authUser);
   };
+  
 
   const logout = () => {
     setAuthUser(null);

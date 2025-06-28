@@ -16,7 +16,6 @@ import {
   SuccessMessage,
   Container
 } from '../styles/StyledComponents';
-import { Navigate } from 'react-router-dom';
 
 const initialState = {
   username: '',
@@ -48,7 +47,7 @@ const loginReducer = (state, action) => {
 };
 
 const Login = () => {
-  const navigate=useNavigate()
+  const navigate = useNavigate()
   const [state, dispatch] = useReducer(loginReducer, initialState);
   const { login } = useAuth();
 
@@ -56,12 +55,12 @@ const Login = () => {
     dispatch({ type: 'UPDATE_FIELD', field, value });
   };
 
-  const onSwitchToForgot=()=>{
+  const onSwitchToForgot = () => {
     navigate("/forget-password")
 
   }
 
-  const onSwitchToRegister=()=>{
+  const onSwitchToRegister = () => {
     navigate("/register");
   }
 
@@ -72,7 +71,9 @@ const Login = () => {
     }
     return true;
   };
-
+  const onSwitchToHome = (role) => {
+    navigate(`/${role}/home`)
+  }
   const handleLogin = async () => {
     if (!validateForm()) return;
 
@@ -96,7 +97,7 @@ const Login = () => {
       }
 
       const isPasswordValid = await comparePassword(state.password, user.password);
-      
+
       if (!isPasswordValid) {
         dispatch({ type: 'SET_ERROR', payload: 'Invalid username or password' });
         return;
@@ -109,6 +110,9 @@ const Login = () => {
       });
 
       dispatch({ type: 'SET_SUCCESS', payload: `Welcome back, ${user.name}!` });
+      setTimeout(() => {
+        onSwitchToHome(user.role);
+      }, 3000);
     } catch (error) {
       console.error('Login error:', error);
       dispatch({ type: 'SET_ERROR', payload: 'Login failed. Please try again.' });
@@ -127,7 +131,7 @@ const Login = () => {
         <Title>Welcome Back</Title>
         {state.error && <ErrorMessage>{state.error}</ErrorMessage>}
         {state.success && <SuccessMessage>{state.success}</SuccessMessage>}
-        
+
         <Form>
           <InputGroup>
             <Input
@@ -138,22 +142,22 @@ const Login = () => {
               onKeyPress={handleKeyPress}
             />
           </InputGroup>
-          
+
           <InputGroup>
             <Input
               type="password"
               placeholder="Password"
               value={state.password}
               onChange={(e) => handleInputChange('password', e.target.value)}
-              onKeyPress={handleKeyPress}
+              onKeyDown={handleKeyPress}
             />
           </InputGroup>
-          
+
           <Button onClick={handleLogin} disabled={state.loading}>
             {state.loading ? 'Signing In...' : 'Sign In'}
           </Button>
         </Form>
-        
+
         <div style={{ textAlign: 'center', marginTop: '20px' }}>
           <LinkButton onClick={onSwitchToForgot}>
             Forgot Password?

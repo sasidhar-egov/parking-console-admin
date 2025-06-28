@@ -172,7 +172,7 @@ const Register = () => {
 
                 <InputGroup>
                     <Input
-                        type="tel"
+                        type="phone"
                         placeholder="Phone Number (10 digits) *"
                         value={state.phone}
                         onChange={(e) => handleInputChange('phone', e.target.value)}

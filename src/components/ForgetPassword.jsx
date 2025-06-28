@@ -87,7 +87,6 @@ const ForgotPassword = () => {
         dispatch({ type: 'SET_ERROR', payload: 'Username do not match' });
         return;
       }
-      console.log(matches,"hiii");
       const user = matches.find(u => u.phone === state.phone);
 
       if (!user) {
@@ -130,7 +129,7 @@ const ForgotPassword = () => {
 
           <InputGroup>
             <Input
-              type="tel"
+              type="phone"
               placeholder="Enter your phone number"
               value={state.phone}
               onChange={(e) => handleInputChange('phone', e.target.value)}
