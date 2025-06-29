@@ -6,6 +6,9 @@ import CustomerHome from './components/CustomerComponents/CustomerHome';
 import CustomerOrders from './components/CustomerComponents/CustomerOrders';
 import { db, clearAllData, initializeDummyData } from './data/db';
 import { useEffect } from 'react';
+import StaffDashboard from './components/StaffComponents/StaffHomepage';
+import VehicleEntry from './components/StaffComponents/VehicleEntry';
+import VehicleExit from './components/StaffComponents/VehicleExit';
 
 const App = () => {
   const fetchDummyData = async () => {
@@ -30,6 +33,12 @@ const App = () => {
         <Route path="/customer/*">
           <Route path="home" element={<CustomerHome />} />
           <Route path="orders" element={<CustomerOrders />} />
+        </Route>
+        <Route path="/staff/*">
+          <Route path="home" element={<StaffDashboard />} />
+          <Route path="VehicleEntry" element={<VehicleEntry />} />
+          <Route path="VehicleExit" element={<VehicleExit />} />
+
         </Route>
       </Routes>
     </BrowserRouter>

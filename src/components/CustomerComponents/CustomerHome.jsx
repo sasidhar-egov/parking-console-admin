@@ -141,34 +141,10 @@ const CustomerHomePage = () => {
     fetchSlots();
   }, []);
 
-  // Check if user is logged in
-  useEffect(() => {
-    const username = localStorage.getItem('username');
-    if (!username) {
-      dispatch({ 
-        type: 'SHOW_ALERT', 
-        payload: { 
-          message: 'Please login to book parking slots', 
-          type: 'error' 
-        }
-      });
-    }
-  }, []);
+ 
 
   const handleSlotClick = (slot) => {
     if (!slot.occupied) {
-      // Check if user is logged in before allowing slot selection
-      const username = localStorage.getItem('username');
-      if (!username) {
-        dispatch({ 
-          type: 'SHOW_ALERT', 
-          payload: { 
-            message: 'Please login to book parking slots', 
-            type: 'error' 
-          }
-        });
-        return;
-      }
       dispatch({ type: 'SELECT_SLOT', payload: slot });
     }
   };

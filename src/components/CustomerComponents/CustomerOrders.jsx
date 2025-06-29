@@ -84,6 +84,11 @@ const CustomerOrderStatus = styled.span`
   
   ${props => {
     switch (props.status) {
+      case 'booked':
+        return `
+          background: #FF9800;
+          color: white;
+        `;
       case 'active':
         return `
           background: #4CAF50;
@@ -101,7 +106,7 @@ const CustomerOrderStatus = styled.span`
         `;
       default:
         return `
-          background: #FF9800;
+          background: #9E9E9E;
           color: white;
         `;
     }
@@ -173,20 +178,6 @@ const CustomerOrderButton = styled.button`
       transform: none;
     }
   }
-
-  &.extend {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-    &:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-    }
-    &:disabled {
-      background: #ccc;
-      cursor: not-allowed;
-      transform: none;
-    }
-  }
 `;
 
 const CustomerEmptyState = styled.div`
@@ -245,15 +236,6 @@ const customerOrdersReducer = (state, action) => {
             : order
         )
       };
-    case 'EXTEND_ORDER':
-      return {
-        ...state,
-        orders: state.orders.map(order =>
-          order.id === action.payload
-            ? { ...order, exitTime: action.newExitTime }
-            : order
-        )
-      };
     default:
       return state;
   }
@@ -262,8 +244,6 @@ const customerOrdersReducer = (state, action) => {
 const CustomerOrdersPage = () => {
   const [state, dispatch] = useReducer(customerOrdersReducer, initialState);
 
-  // Mock current user - replace with actual user context
-  const currentUser = { username: 'customer1', name: 'John Doe' };
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -271,7 +251,7 @@ const CustomerOrdersPage = () => {
         const orders = await db.bookings
           .where('userName')
           .equals(localStorage.getItem("username"))
-          .reverse() // optional: newest first
+          .reverse()
           .toArray();
 
         dispatch({ type: 'SET_ORDERS', payload: orders });
@@ -281,21 +261,22 @@ const CustomerOrdersPage = () => {
     };
 
     fetchOrders();
-  }, );
+  },);
 
   const handleCancelOrder = async (orderId) => {
-  try {
-    const order = await db.bookings.get(orderId);
-    if (!order) return;
+    try {
+      const order = await db.bookings.get(orderId);
+      if (!order) return;
 
-    await db.bookings.update(orderId, { status: 'cancelled' });
-    await db.slots.update(order.slotId, { occupied: false });
+      await db.bookings.update(orderId, { status: 'cancelled' });
+      await db.slots.update(order.slotId, { vehicleNumber: null, userName: null, entryTime: null, occupied: false });
+      console.log("hello");
 
-    dispatch({ type: 'CANCEL_ORDER', payload: orderId });
-  } catch (error) {
-    console.error('Error cancelling order:', error);
-  }
-};
+      dispatch({ type: 'CANCEL_ORDER', payload: orderId });
+    } catch (error) {
+      console.error('Error cancelling order:', error);
+    }
+  };
 
   const formatDateTime = (dateString) => {
     const date = new Date(dateString);
@@ -378,7 +359,8 @@ const CustomerOrdersPage = () => {
               </CustomerOrderDetail>
             </CustomerOrderDetails>
 
-            {order.status === 'active' && (
+            {/* Only show cancel button for 'booked' status */}
+            {order.status === 'booked' && (
               <CustomerOrderActions>
                 <CustomerOrderButton
                   className="cancel"
