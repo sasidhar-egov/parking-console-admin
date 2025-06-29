@@ -187,7 +187,7 @@ const CustomerNavbarComponent = () => {
   return (
     <CustomerNavbar>
       <CustomerNavContainer>
-        <CustomerLogo onClick={() => console.log('Navigate to home')}>
+        <CustomerLogo onClick={() => navigate("/customer/home")}>
           <CustomerLogoIcon>P</CustomerLogoIcon>
           ParkEase
         </CustomerLogo>

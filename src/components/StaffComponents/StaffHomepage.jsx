@@ -1,6 +1,6 @@
 import React, { useReducer, useEffect } from 'react';
 import styled from 'styled-components';
-import { db } from '../../data/db'; // Import your database
+import { db } from '../../data/db';
 import StaffNavbar from './StaffNavBar';
 
 const Container = styled.div`
@@ -54,10 +54,13 @@ const SlotsGrid = styled.div`
 `;
 
 const SlotCard = styled.div`
-  background: ${props => props.occupied ? '#dc3545' : '#28a745'};
+  background: ${props =>
+    props.status === 'booked' ? '#ffc107' :
+    props.status === 'active' ? '#dc3545' :
+    '#28a745'};
   color: white;
   padding: 1rem;
-  min-height:2rem;
+  min-height: 2rem;
   border-radius: 10px;
   text-align: center;
   font-weight: bold;
@@ -81,7 +84,7 @@ const BookingDetail = styled.div`
   justify-content: space-between;
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
-  
+
   strong {
     color: #333;
   }
@@ -90,9 +93,8 @@ const BookingDetail = styled.div`
 const StatusBadge = styled.span`
   background: ${props =>
     props.status === 'booked' ? '#ffc107' :
-      props.status === 'active' ? '#28a745' :
-        props.status === 'completed' ? '#6c757d' : '#dc3545'
-  };
+    props.status === 'active' ? '#28a745' :
+    props.status === 'completed' ? '#6c757d' : '#dc3545'};
   color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 15px;
@@ -115,15 +117,18 @@ const RefreshButton = styled.button`
   }
 `;
 
+// Initial state & reducer
 const initialState = {
   stats: {
     totalSlots: 0,
     occupiedSlots: 0,
     availableSlots: 0,
     activeBookings: 0,
+    bookedSlots: 0
   },
   slots: [],
   recentBookings: [],
+  allBookings: [],
   loading: false
 };
 
@@ -137,37 +142,28 @@ const reducer = (state, action) => {
       return { ...state, slots: action.payload };
     case 'SET_RECENT_BOOKINGS':
       return { ...state, recentBookings: action.payload };
+    case 'SET_ALL_BOOKINGS':
+      return { ...state, allBookings: action.payload };
     default:
       return state;
   }
 };
 
+// Main Component
 const StaffDashboard = () => {
-
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const loadDashboardData = async () => {
     dispatch({ type: 'SET_LOADING', payload: true });
 
     try {
-      // Get all slots
       const slots = await db.slots.toArray();
+      const bookings = await db.bookings.toArray();
+
       const occupiedSlots = slots.filter(slot => slot.occupied);
+      const activeBookings = bookings.filter(b => b.status === 'active');
+      const bookedSlots = bookings.filter(b => b.status === 'booked');
 
-      // Get today's bookings
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-
-
-      // Get active bookings
-      const activeBookings = await db.bookings
-        .where('status')
-        .equals('active')
-        .toArray();
-
-      // Get recent bookings (last 10)
       const recentBookings = await db.bookings
         .orderBy('id')
         .reverse()
@@ -175,16 +171,19 @@ const StaffDashboard = () => {
         .toArray();
 
       dispatch({
-        type: 'SET_STATS', payload: {
+        type: 'SET_STATS',
+        payload: {
           totalSlots: slots.length,
           occupiedSlots: occupiedSlots.length,
           availableSlots: slots.length - occupiedSlots.length,
           activeBookings: activeBookings.length,
+          bookedSlots: bookedSlots.length
         }
       });
 
       dispatch({ type: 'SET_SLOTS', payload: slots });
       dispatch({ type: 'SET_RECENT_BOOKINGS', payload: recentBookings });
+      dispatch({ type: 'SET_ALL_BOOKINGS', payload: bookings });
 
     } catch (error) {
       console.error('Error loading dashboard data:', error);
@@ -197,9 +196,16 @@ const StaffDashboard = () => {
     loadDashboardData();
   }, []);
 
+  const getSlotStatus = (slotNumber) => {
+    const booking = state.allBookings.find(
+      (b) => b.slotNumber === slotNumber && ['booked', 'active'].includes(b.status)
+    );
+    return booking ? booking.status : 'available';
+  };
+
   return (
     <>
-      <StaffNavbar currentPage="home"/>
+      <StaffNavbar currentPage="home" />
       <Container>
         <RefreshButton onClick={loadDashboardData} disabled={state.loading}>
           {state.loading ? 'Loading...' : '🔄 Refresh Dashboard'}
@@ -210,39 +216,41 @@ const StaffDashboard = () => {
             <StatNumber>{state.stats.totalSlots}</StatNumber>
             <StatLabel>Total Slots</StatLabel>
           </StatCard>
-
           <StatCard gradient="#28a745 0%, #20c997 100%">
             <StatNumber>{state.stats.availableSlots}</StatNumber>
             <StatLabel>Available Slots</StatLabel>
           </StatCard>
-
           <StatCard gradient="#dc3545 0%, #fd7e14 100%">
             <StatNumber>{state.stats.occupiedSlots}</StatNumber>
             <StatLabel>Occupied Slots</StatLabel>
           </StatCard>
-
           <StatCard gradient="#ffc107 0%, #fd7e14 100%">
             <StatNumber>{state.stats.activeBookings}</StatNumber>
             <StatLabel>Active Bookings</StatLabel>
           </StatCard>
-
-
+          <StatCard gradient="#17a2b8 0%, #20c997 100%">
+            <StatNumber>{state.stats.bookedSlots}</StatNumber>
+            <StatLabel>Booked Slots</StatLabel>
+          </StatCard>
         </Grid>
 
         <Grid>
           <Card>
             <Title>🅿️ Parking Slots Overview</Title>
             <SlotsGrid>
-              {state.slots.map((slot) => (
-                <SlotCard key={slot.id} occupied={slot.occupied}>
-                  <div>{slot.number}</div>
-                  {slot.occupied && (
-                    <div style={{ fontSize: '0.7rem', marginTop: '0.25rem' }}>
-                      {slot.vehicleNumber}
-                    </div>
-                  )}
-                </SlotCard>
-              ))}
+              {state.slots.map((slot) => {
+                const status = getSlotStatus(slot.number);
+                return (
+                  <SlotCard key={slot.id} status={status}>
+                    <div>{slot.number}</div>
+                    {status !== 'available' && (
+                      <div style={{ fontSize: '0.7rem', marginTop: '0.25rem' }}>
+                        {slot.vehicleNumber}
+                      </div>
+                    )}
+                  </SlotCard>
+                );
+              })}
             </SlotsGrid>
           </Card>
 
@@ -251,7 +259,7 @@ const StaffDashboard = () => {
             {state.recentBookings.length === 0 ? (
               <p>No recent bookings found.</p>
             ) : (
-              state.recentBookings.slice(0, Math.min(state.recentBookings.length, 10)).map((booking) => (
+              state.recentBookings.map((booking) => (
                 <BookingCard key={booking.id}>
                   <BookingDetail>
                     <span><strong>Slot:</strong> {booking.slotNumber}</span>

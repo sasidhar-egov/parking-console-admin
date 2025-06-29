@@ -164,7 +164,6 @@ const VehicleExit = () => {
   };
 
   const calculateAmount = (hours) => {
-    // ₹30 per hour
     return hours * 30;
   };
 
