@@ -133,11 +133,11 @@ const bookingReducer = (state, action) => {
   }
 };
 
-const BookingModal = ({ 
-  isOpen, 
-  selectedSlot, 
-  onClose, 
-  onBookingSuccess 
+const BookingModal = ({
+  isOpen,
+  selectedSlot,
+  onClose,
+  onBookingSuccess
 }) => {
   const [state, dispatch] = useReducer(bookingReducer, initialState);
 
@@ -159,16 +159,16 @@ const BookingModal = ({
         .equals(vehicleNumber.trim().toUpperCase())
         .and(booking => booking.status === 'booked')
         .first();
-      
+
       return existingBooking !== undefined;
     } catch (error) {
       console.error('Error checking vehicle:', error);
       // Assume not parked if there's a DB error to allow booking attempt
-      return false; 
+      return false;
     }
   };
 
- 
+
 
   const checkIfUserInSlots = async (username) => {
     try {
@@ -178,7 +178,7 @@ const BookingModal = ({
         .equals(username)
         .and(slot => slot.occupied === true)
         .first();
-      
+
       return existingSlot !== undefined;
     } catch (error) {
       console.error('Error checking user in slots:', error);
@@ -190,10 +190,10 @@ const BookingModal = ({
     dispatch({ type: 'RESET_FORM' });
     onClose();
   };
-  
+
   const handleBookSlot = async () => {
     const trimmedVehicleNumber = state.vehicleNumber.trim().toUpperCase();
-    
+
     const validationError = validateVehicleNumber(trimmedVehicleNumber);
     if (validationError) {
       dispatch({ type: 'SET_ERROR', payload: validationError });
@@ -206,7 +206,7 @@ const BookingModal = ({
 
     try {
       const username = localStorage.getItem('username');
-    
+
 
       // Check if vehicle is already parked
       const isVehicleAlreadyParked = await checkIfVehicleAlreadyParked(trimmedVehicleNumber);
@@ -214,7 +214,7 @@ const BookingModal = ({
         throw new Error('This vehicle is already parked. Please exit first.');
       }
 
-    
+
       // Additional check: verify user is not in slots table
       const userInSlots = await checkIfUserInSlots(username);
       if (userInSlots) {
@@ -262,46 +262,48 @@ const BookingModal = ({
   if (!isOpen || !selectedSlot) return null;
 
   return (
-    <Modal onClick={handleClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
-        <ModalTitle>Book Parking Slot</ModalTitle>
-        <ModalText>
-          Booking slot {selectedSlot.number}
-        </ModalText>
-        
-        <InputGroup>
-          <Label htmlFor="vehicleNumber">Vehicle Number *</Label>
-          <Input
-            id="vehicleNumber"
-            type="text"
-            value={state.vehicleNumber}
-            onChange={(e) => dispatch({ type: 'SET_VEHICLE_NUMBER', payload: e.target.value })}
-            placeholder="Enter vehicle number (e.g., KA01AB1234)"
-            className={state.error ? 'error' : ''}
-            disabled={state.isLoading}
-            autoFocus
-          />
-          {state.error && <ErrorMessage>{state.error}</ErrorMessage>}
-        </InputGroup>
+    <>
+      <Modal onClick={handleClose}>
+        <ModalContent onClick={(e) => e.stopPropagation()}>
+          <ModalTitle>Book Parking Slot</ModalTitle>
+          <ModalText>
+            Booking slot {selectedSlot.number}
+          </ModalText>
 
-        <ButtonGroup>
-          <Button 
-            className="primary" 
-            onClick={handleBookSlot}
-            disabled={state.isLoading || !state.vehicleNumber}
-          >
-            {state.isLoading ? 'Booking...' : 'Book Now'}
-          </Button>
-          <Button 
-            className="secondary" 
-            onClick={handleClose}
-            disabled={state.isLoading}
-          >
-            Cancel
-          </Button>
-        </ButtonGroup>
-      </ModalContent>
-    </Modal>
+          <InputGroup>
+            <Label htmlFor="vehicleNumber">Vehicle Number *</Label>
+            <Input
+              id="vehicleNumber"
+              type="text"
+              value={state.vehicleNumber}
+              onChange={(e) => dispatch({ type: 'SET_VEHICLE_NUMBER', payload: e.target.value })}
+              placeholder="Enter vehicle number (e.g., KA01AB1234)"
+              className={state.error ? 'error' : ''}
+              disabled={state.isLoading}
+              autoFocus
+            />
+            {state.error && <ErrorMessage>{state.error}</ErrorMessage>}
+          </InputGroup>
+
+          <ButtonGroup>
+            <Button
+              className="primary"
+              onClick={handleBookSlot}
+              disabled={state.isLoading || !state.vehicleNumber}
+            >
+              {state.isLoading ? 'Booking...' : 'Book Now'}
+            </Button>
+            <Button
+              className="secondary"
+              onClick={handleClose}
+              disabled={state.isLoading}
+            >
+              Cancel
+            </Button>
+          </ButtonGroup>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 
