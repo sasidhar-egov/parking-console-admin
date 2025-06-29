@@ -173,8 +173,6 @@ const CustomerMobileToggle = styled.button`
 
 const CustomerNavbarComponent = () => {
   const navigate = useNavigate()
-  const { authUser } = useAuth()
-  console.log(authUser);
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleMobileMenu = () => {
@@ -212,7 +210,7 @@ const CustomerNavbarComponent = () => {
         </CustomerNavLinks>
 
         <CustomerUserSection isOpen={isOpen}>
-          <CustomerUserName>Welcome, {authUser}</CustomerUserName>
+          <CustomerUserName>Welcome, {localStorage.getItem("username")}</CustomerUserName>
           <CustomerLogoutButton onClick={handleLogout}>
             Logout
           </CustomerLogoutButton>

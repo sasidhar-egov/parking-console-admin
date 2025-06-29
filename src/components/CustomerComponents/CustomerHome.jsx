@@ -2,6 +2,8 @@ import React, { useReducer, useEffect } from 'react';
 import { db } from '../../data/db';
 import styled from 'styled-components';
 import CustomerNavbarComponent from './CustomerNavbar';
+import BookingModal from './CustomerBookingModel'; // Import the new component
+
 // Styled Components with customer prefix
 const CustomerHomeContainer = styled.div`
   padding: 20px;
@@ -56,68 +58,6 @@ const CustomerSlotStatus = styled.p`
   opacity: 0.8;
 `;
 
-const CustomerModal = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-`;
-
-const CustomerModalContent = styled.div`
-  background: white;
-  border-radius: 12px;
-  padding: 30px;
-  text-align: center;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  max-width: 400px;
-  width: 90%;
-`;
-
-const CustomerModalTitle = styled.h2`
-  color: #333;
-  margin-bottom: 20px;
-  font-size: 1.5rem;
-`;
-
-const CustomerModalText = styled.p`
-  color: #666;
-  margin-bottom: 25px;
-  font-size: 16px;
-`;
-
-const CustomerButton = styled.button`
-  padding: 12px 24px;
-  margin: 0 10px;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &.primary {
-    background-color: #4CAF50;
-    color: white;
-    &:hover {
-      background-color: #45a049;
-    }
-  }
-
-  &.secondary {
-    background-color: #f0f0f0;
-    color: #333;
-    &:hover {
-      background-color: #e0e0e0;
-    }
-  }
-`;
-
 const CustomerAlert = styled.div`
   position: fixed;
   top: 20px;
@@ -131,12 +71,18 @@ const CustomerAlert = styled.div`
   font-weight: bold;
 `;
 
+const ErrorAlert = styled(CustomerAlert)`
+  background-color: #f44336;
+`;
+
 // Reducer for managing state
 const initialState = {
   slots: [],
   selectedSlot: null,
   showModal: false,
   showAlert: false,
+  alertMessage: '',
+  alertType: 'success', // 'success' or 'error'
   loading: true
 };
 
@@ -149,9 +95,14 @@ const customerReducer = (state, action) => {
     case 'CLOSE_MODAL':
       return { ...state, selectedSlot: null, showModal: false };
     case 'SHOW_ALERT':
-      return { ...state, showAlert: true };
+      return { 
+        ...state, 
+        showAlert: true, 
+        alertMessage: action.payload.message,
+        alertType: action.payload.type || 'success'
+      };
     case 'HIDE_ALERT':
-      return { ...state, showAlert: false };
+      return { ...state, showAlert: false, alertMessage: '', alertType: 'success' };
     case 'BOOK_SLOT':
       return {
         ...state,
@@ -169,82 +120,82 @@ const customerReducer = (state, action) => {
 const CustomerHomePage = () => {
   const [state, dispatch] = useReducer(customerReducer, initialState);
 
-  // Mock data - replace with actual Dexie db calls
+  // Fetch slots from database
   useEffect(() => {
-  const fetchSlots = async () => {
-    try {
-      const allSlots = await db.slots.toArray();
-
-      // Optional: If database is empty, you can prepopulate
-      if (allSlots.length === 0) {
-        const defaultSlots = Array.from({ length: 20 }, (_, i) => ({
-          number: `P${String(i + 1).padStart(3, '0')}`,
-          occupied: false,
-          vehicleNumber: null,
-          userName: null,
-          entryTime: null
-        }));
-        await db.slots.bulkAdd(defaultSlots);
-        dispatch({ type: 'SET_SLOTS', payload: await db.slots.toArray() });
-      } else {
+    const fetchSlots = async () => {
+      try {
+        const allSlots = await db.slots.toArray();
         dispatch({ type: 'SET_SLOTS', payload: allSlots });
+      } catch (error) {
+        console.error("Error fetching slots from DB:", error);
+        dispatch({ 
+          type: 'SHOW_ALERT', 
+          payload: { 
+            message: 'Error loading parking slots', 
+            type: 'error' 
+          }
+        });
       }
-    } catch (error) {
-      console.error("Error fetching slots from DB:", error);
+    };
+
+    fetchSlots();
+  }, []);
+
+  // Check if user is logged in
+  useEffect(() => {
+    const username = localStorage.getItem('username');
+    if (!username) {
+      dispatch({ 
+        type: 'SHOW_ALERT', 
+        payload: { 
+          message: 'Please login to book parking slots', 
+          type: 'error' 
+        }
+      });
     }
-  };
-
-  fetchSlots();
-}, []);
-
+  }, []);
 
   const handleSlotClick = (slot) => {
     if (!slot.occupied) {
+      // Check if user is logged in before allowing slot selection
+      const username = localStorage.getItem('username');
+      if (!username) {
+        dispatch({ 
+          type: 'SHOW_ALERT', 
+          payload: { 
+            message: 'Please login to book parking slots', 
+            type: 'error' 
+          }
+        });
+        return;
+      }
       dispatch({ type: 'SELECT_SLOT', payload: slot });
     }
   };
 
-  const handleBookSlot = async () => {
-  if (state.selectedSlot) {
-    try {
-      const now = new Date().toISOString();
-      const vehicleNumber = 'VEHICLE123'; // Replace with user input
-      const userName = 'some_user';       // Replace with current user
+  const handleBookingSuccess = (slotId) => {
+    dispatch({ type: 'BOOK_SLOT', payload: slotId });
+    dispatch({ 
+      type: 'SHOW_ALERT', 
+      payload: { 
+        message: 'Slot booked successfully! 🎉', 
+        type: 'success' 
+      }
+    });
 
-      await db.slots.update(state.selectedSlot.id, {
-        occupied: true,
-        vehicleNumber,
-        userName,
-        entryTime: now
-      });
-
-      await db.bookings.add({
-        slotId: state.selectedSlot.id,
-        slotNumber: state.selectedSlot.number,
-        vehicleNumber,
-        userName,
-        entryTime: now,
-        exitTime: null,
-        status: 'booked',
-        duration: null,
-        amount: null
-      });
-
-      dispatch({ type: 'BOOK_SLOT', payload: state.selectedSlot.id });
-      dispatch({ type: 'SHOW_ALERT' });
-
-      setTimeout(() => {
-        dispatch({ type: 'HIDE_ALERT' });
-      }, 3000);
-    } catch (err) {
-      console.error("Booking failed:", err);
-    }
-  }
-};
-
+    // Hide alert after 3 seconds
+    setTimeout(() => {
+      dispatch({ type: 'HIDE_ALERT' });
+    }, 3000);
+  };
 
   const handleCloseModal = () => {
     dispatch({ type: 'CLOSE_MODAL' });
+  };
+
+  // Hide alert manually if needed
+  const hideAlert = () => {
+    dispatch({ type: 'HIDE_ALERT' });
   };
 
   if (state.loading) {
@@ -258,7 +209,7 @@ const CustomerHomePage = () => {
 
   return (
     <CustomerHomeContainer>
-        <CustomerNavbarComponent/>
+      <CustomerNavbarComponent/>
       <CustomerTitle>Available Parking Slots</CustomerTitle>
       
       <CustomerSlotsGrid>
@@ -276,35 +227,25 @@ const CustomerHomePage = () => {
         ))}
       </CustomerSlotsGrid>
 
-      {state.showModal && state.selectedSlot && (
-        <CustomerModal onClick={handleCloseModal}>
-          <CustomerModalContent onClick={(e) => e.stopPropagation()}>
-            <CustomerModalTitle>Book Parking Slot</CustomerModalTitle>
-            <CustomerModalText>
-              Do you want to book parking slot {state.selectedSlot.number}?
-            </CustomerModalText>
-            <div>
-              <CustomerButton 
-                className="primary" 
-                onClick={handleBookSlot}
-              >
-                Book Now
-              </CustomerButton>
-              <CustomerButton 
-                className="secondary" 
-                onClick={handleCloseModal}
-              >
-                Cancel
-              </CustomerButton>
-            </div>
-          </CustomerModalContent>
-        </CustomerModal>
-      )}
+      {/* Reusable Booking Modal */}
+      <BookingModal
+        isOpen={state.showModal}
+        selectedSlot={state.selectedSlot}
+        onClose={handleCloseModal}
+        onBookingSuccess={handleBookingSuccess}
+      />
 
+      {/* Alert Messages */}
       {state.showAlert && (
-        <CustomerAlert>
-          Slot booked successfully! 🎉
-        </CustomerAlert>
+        state.alertType === 'success' ? (
+          <CustomerAlert onClick={hideAlert}>
+            {state.alertMessage}
+          </CustomerAlert>
+        ) : (
+          <ErrorAlert onClick={hideAlert}>
+            {state.alertMessage}
+          </ErrorAlert>
+        )
       )}
     </CustomerHomeContainer>
   );
