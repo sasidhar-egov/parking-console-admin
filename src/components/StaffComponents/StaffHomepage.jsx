@@ -57,10 +57,11 @@ const SlotCard = styled.div`
   background: ${props => props.occupied ? '#dc3545' : '#28a745'};
   color: white;
   padding: 1rem;
+  min-height:2rem;
   border-radius: 10px;
   text-align: center;
   font-weight: bold;
-  transition: transform 0.2s ease;
+  transition: transform 0.5s ease;
 
   &:hover {
     transform: scale(1.05);
@@ -120,7 +121,6 @@ const initialState = {
     occupiedSlots: 0,
     availableSlots: 0,
     activeBookings: 0,
-    todayRevenue: 0
   },
   slots: [],
   recentBookings: [],
@@ -160,20 +160,12 @@ const StaffDashboard = () => {
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
 
-      const todayBookings = await db.bookings
-        .where('entryTime')
-        .between(today.toISOString(), tomorrow.toISOString())
-        .toArray();
-
+    
       // Get active bookings
       const activeBookings = await db.bookings
         .where('status')
         .equals('active')
-        .toArray();
-
-      // Calculate today's revenue
-      const completedTodayBookings = todayBookings.filter(booking => booking.status === 'completed');
-      const todayRevenue = completedTodayBookings.reduce((sum, booking) => sum + (booking.amount || 0), 0);
+        .toArray();      
 
       // Get recent bookings (last 10)
       const recentBookings = await db.bookings
@@ -187,7 +179,6 @@ const StaffDashboard = () => {
         occupiedSlots: occupiedSlots.length,
         availableSlots: slots.length - occupiedSlots.length,
         activeBookings: activeBookings.length,
-        todayRevenue: todayRevenue
       }});
 
       dispatch({ type: 'SET_SLOTS', payload: slots });
@@ -232,10 +223,7 @@ const StaffDashboard = () => {
           <StatLabel>Active Bookings</StatLabel>
         </StatCard>
 
-        <StatCard gradient="#6f42c1 0%, #e83e8c 100%">
-          <StatNumber>₹{state.stats.todayRevenue}</StatNumber>
-          <StatLabel>Today's Revenue</StatLabel>
-        </StatCard>
+        
       </Grid>
 
       <Grid>
@@ -260,7 +248,7 @@ const StaffDashboard = () => {
           {state.recentBookings.length === 0 ? (
             <p>No recent bookings found.</p>
           ) : (
-            state.recentBookings.map((booking) => (
+            state.recentBookings.slice(0, Math.min(state.recentBookings.length, 10)).map((booking) => (
               <BookingCard key={booking.id}>
                 <BookingDetail>
                   <span><strong>Slot:</strong> {booking.slotNumber}</span>
