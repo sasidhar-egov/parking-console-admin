@@ -297,20 +297,6 @@ const CustomerOrdersPage = () => {
   }
 };
 
-
-  const handleExtendOrder = async (orderId) => {
-    try {
-      const newExitTime = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(); // Extend by 2 hours
-
-      // Here you would update the database
-      // await db.bookings.update(orderId, { exitTime: newExitTime });
-
-      dispatch({ type: 'EXTEND_ORDER', payload: orderId, newExitTime });
-    } catch (error) {
-      console.error('Error extending order:', error);
-    }
-  };
-
   const formatDateTime = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleString('en-IN', {
@@ -394,12 +380,6 @@ const CustomerOrdersPage = () => {
 
             {order.status === 'active' && (
               <CustomerOrderActions>
-                <CustomerOrderButton
-                  className="extend"
-                  onClick={() => handleExtendOrder(order.id)}
-                >
-                  Extend Time
-                </CustomerOrderButton>
                 <CustomerOrderButton
                   className="cancel"
                   onClick={() => handleCancelOrder(order.id)}
