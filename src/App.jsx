@@ -41,8 +41,8 @@ const App = () => {
         </Route>
         <Route path="/staff/*">
           <Route path="home" element={<StaffDashboard />} />
-          <Route path="VehicleEntry" element={<VehicleEntry />} />
-          <Route path="VehicleExit" element={<VehicleExit />} />
+          <Route path="vehicle-entry" element={<VehicleEntry />} />
+          <Route path="vehicle-exit" element={<VehicleExit />} />
 
         </Route>
         <Route path="/admin/*">

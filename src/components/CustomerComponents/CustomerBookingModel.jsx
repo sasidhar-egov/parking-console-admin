@@ -262,7 +262,6 @@ const BookingModal = ({
   if (!isOpen || !selectedSlot) return null;
 
   return (
-    <>
       <Modal onClick={handleClose}>
         <ModalContent onClick={(e) => e.stopPropagation()}>
           <ModalTitle>Book Parking Slot</ModalTitle>
@@ -303,7 +302,6 @@ const BookingModal = ({
           </ButtonGroup>
         </ModalContent>
       </Modal>
-    </>
   );
 };
 

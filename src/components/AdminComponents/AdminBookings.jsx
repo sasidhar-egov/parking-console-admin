@@ -175,6 +175,7 @@ const initialState = {
     active: 0,
     completed: 0,
     cancelled: 0,
+    booked: 0,
     totalRevenue: 0
   }
 };
@@ -184,32 +185,32 @@ const adminBookingsReducer = (state, action) => {
     case 'SET_LOADING':
       return { ...state, loading: action.payload };
     case 'SET_BOOKINGS':
-      const filteredBookings = action.payload.filter(booking => 
+      const filteredBookings = action.payload.filter(booking =>
         filterBooking(booking, state.searchTerm, state.statusFilter)
       );
-      return { 
-        ...state, 
+      return {
+        ...state,
         bookings: action.payload,
         filteredBookings,
         stats: calculateStats(action.payload),
-        loading: false 
+        loading: false
       };
     case 'SET_SEARCH_TERM':
-      const searchFiltered = state.bookings.filter(booking => 
+      const searchFiltered = state.bookings.filter(booking =>
         filterBooking(booking, action.payload, state.statusFilter)
       );
-      return { 
-        ...state, 
+      return {
+        ...state,
         searchTerm: action.payload,
         filteredBookings: searchFiltered,
         currentPage: 1
       };
     case 'SET_STATUS_FILTER':
-      const statusFiltered = state.bookings.filter(booking => 
+      const statusFiltered = state.bookings.filter(booking =>
         filterBooking(booking, state.searchTerm, action.payload)
       );
-      return { 
-        ...state, 
+      return {
+        ...state,
         statusFilter: action.payload,
         filteredBookings: statusFiltered,
         currentPage: 1
@@ -224,13 +225,13 @@ const adminBookingsReducer = (state, action) => {
 };
 
 const filterBooking = (booking, searchTerm, statusFilter) => {
-  const matchesSearch = !searchTerm || 
+  const matchesSearch = !searchTerm ||
     booking.vehicleNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
     booking.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     booking.slotNumber.toString().includes(searchTerm);
-  
+
   const matchesStatus = statusFilter === 'all' || booking.status === statusFilter;
-  
+
   return matchesSearch && matchesStatus;
 };
 
@@ -240,6 +241,7 @@ const calculateStats = (bookings) => {
     active: bookings.filter(b => b.status === 'active').length,
     completed: bookings.filter(b => b.status === 'completed').length,
     cancelled: bookings.filter(b => b.status === 'cancelled').length,
+    booked: bookings.filter(b => b.status === "booked").length,
     totalRevenue: bookings.reduce((sum, b) => sum + (b.amount || 0), 0)
   };
 };
@@ -287,137 +289,147 @@ const AdminBookings = () => {
 
   if (state.loading) {
     return (
-      <AdminBookingsContainer>
-    
-                <AdminNavbar currentPage="bookings"/>
-        
-        <AdminTitle>Loading Bookings...</AdminTitle>
-      </AdminBookingsContainer>
+      <>
+        <AdminNavbar currentPage="bookings" />
+        <AdminBookingsContainer>
+
+
+          <AdminTitle>Loading Bookings...</AdminTitle>
+        </AdminBookingsContainer>
+      </>
     );
   }
 
   return (
-    <AdminBookingsContainer>
-                <AdminNavbar currentPage="bookings"/>
+    <>
+      <AdminNavbar currentPage="bookings" />
+      <AdminBookingsContainer>
 
-      <AdminTitle>Bookings Management</AdminTitle>
-      
-      <AdminStatsRow>
-        <AdminStatCard>
-          <AdminStatNumber>{state.stats.total}</AdminStatNumber>
-          <AdminStatLabel>Total Bookings</AdminStatLabel>
-        </AdminStatCard>
-        <AdminStatCard>
-          <AdminStatNumber>{state.stats.active}</AdminStatNumber>
-          <AdminStatLabel>Active</AdminStatLabel>
-        </AdminStatCard>
-        <AdminStatCard>
-          <AdminStatNumber>{state.stats.completed}</AdminStatNumber>
-          <AdminStatLabel>Completed</AdminStatLabel>
-        </AdminStatCard>
-        <AdminStatCard>
-          <AdminStatNumber>{state.stats.cancelled}</AdminStatNumber>
-          <AdminStatLabel>Cancelled</AdminStatLabel>
-        </AdminStatCard>
-        <AdminStatCard>
-          <AdminStatNumber>₹{state.stats.totalRevenue}</AdminStatNumber>
-          <AdminStatLabel>Total Revenue</AdminStatLabel>
-        </AdminStatCard>
-      </AdminStatsRow>
+        <AdminTitle>Bookings Management</AdminTitle>
 
-      <AdminFiltersContainer>
-        <AdminFilterRow>
-          <AdminSearchInput
-            type="text"
-            placeholder="Search by vehicle, user, or slot..."
-            value={state.searchTerm}
-            onChange={handleSearchChange}
-          />
-          <AdminFilterSelect value={state.statusFilter} onChange={handleStatusFilter}>
-            <option value="all">All Status</option>
-            <option value="active">Active</option>
-            <option value="completed">Completed</option>
-            <option value="cancelled">Cancelled</option>
-          </AdminFilterSelect>
-        </AdminFilterRow>
-      </AdminFiltersContainer>
+        <AdminStatsRow>
+          <AdminStatCard>
+            <AdminStatNumber>{state.stats.total}</AdminStatNumber>
+            <AdminStatLabel>Total Bookings</AdminStatLabel>
+          </AdminStatCard>
+          <AdminStatCard>
+            <AdminStatNumber>{state.stats.active}</AdminStatNumber>
+            <AdminStatLabel>Active</AdminStatLabel>
+          </AdminStatCard>
+          <AdminStatCard>
+            <AdminStatNumber>{state.stats.completed}</AdminStatNumber>
+            <AdminStatLabel>Completed</AdminStatLabel>
+          </AdminStatCard>
+          <AdminStatCard>
+            <AdminStatNumber>{state.stats.cancelled}</AdminStatNumber>
+            <AdminStatLabel>Cancelled</AdminStatLabel>
+          </AdminStatCard>
+          <AdminStatCard>
+            <AdminStatNumber>{state.stats.booked}</AdminStatNumber>
+            <AdminStatLabel>Booked</AdminStatLabel>
+          </AdminStatCard>
+          <AdminStatCard>
+            <AdminStatNumber>₹{state.stats.totalRevenue}</AdminStatNumber>
+            <AdminStatLabel>Total Revenue</AdminStatLabel>
+          </AdminStatCard>
+        </AdminStatsRow>
 
-      <AdminTableContainer>
-        {currentBookings.length === 0 ? (
-          <AdminEmptyState>
-            <h3>No bookings found</h3>
-            <p>Try adjusting your search or filter criteria.</p>
-          </AdminEmptyState>
-        ) : (
-          <>
-            <AdminTable>
-              <thead>
-                <tr>
-                  <AdminTableHeader>Booking ID</AdminTableHeader>
-                  <AdminTableHeader>Slot</AdminTableHeader>
-                  <AdminTableHeader>Vehicle</AdminTableHeader>
-                  <AdminTableHeader>User</AdminTableHeader>
-                  <AdminTableHeader>Entry Time</AdminTableHeader>
-                  <AdminTableHeader>Exit Time</AdminTableHeader>
-                  <AdminTableHeader>Duration</AdminTableHeader>
-                  <AdminTableHeader>Status</AdminTableHeader>
-                  <AdminTableHeader>Amount</AdminTableHeader>
-                </tr>
-              </thead>
-              <tbody>
-                {currentBookings.map(booking => (
-                  <tr key={booking.id}>
-                    <AdminTableCell>#{booking.id}</AdminTableCell>
-                    <AdminTableCell>#{booking.slotNumber}</AdminTableCell>
-                    <AdminTableCell>{booking.vehicleNumber}</AdminTableCell>
-                    <AdminTableCell>{booking.userName}</AdminTableCell>
-                    <AdminTableCell>{formatDateTime(booking.entryTime)}</AdminTableCell>
-                    <AdminTableCell>
-                      {booking.exitTime ? formatDateTime(booking.exitTime) : 'N/A'}
-                    </AdminTableCell>
-                    <AdminTableCell>{formatDuration(booking.duration)}</AdminTableCell>
-                    <AdminTableCell>
-                      <AdminStatusBadge status={booking.status}>
-                        {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                      </AdminStatusBadge>
-                    </AdminTableCell>
-                    <AdminTableCell>₹{booking.amount || 0}</AdminTableCell>
+        <AdminFiltersContainer>
+          <AdminFilterRow>
+            <AdminSearchInput
+              type="text"
+              placeholder="Search by vehicle, user, or slot..."
+              value={state.searchTerm}
+              onChange={handleSearchChange}
+            />
+            <AdminFilterSelect value={state.statusFilter} onChange={handleStatusFilter}>
+              <option value="all">All Status</option>
+              <option value="active">Active</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+              <option value="booked">booked</option>
+
+            </AdminFilterSelect>
+          </AdminFilterRow>
+        </AdminFiltersContainer>
+
+        <AdminTableContainer>
+          {currentBookings.length === 0 ? (
+            <AdminEmptyState>
+              <h3>No bookings found</h3>
+              <p>Try adjusting your search or filter criteria.</p>
+            </AdminEmptyState>
+          ) : (
+            <>
+              <AdminTable>
+                <thead>
+                  <tr>
+                    <AdminTableHeader>Booking ID</AdminTableHeader>
+                    <AdminTableHeader>Slot</AdminTableHeader>
+                    <AdminTableHeader>Vehicle</AdminTableHeader>
+                    <AdminTableHeader>User</AdminTableHeader>
+                    <AdminTableHeader>Entry Time</AdminTableHeader>
+                    <AdminTableHeader>Exit Time</AdminTableHeader>
+                    <AdminTableHeader>Duration</AdminTableHeader>
+                    <AdminTableHeader>Status</AdminTableHeader>
+                    <AdminTableHeader>Amount</AdminTableHeader>
                   </tr>
-                ))}
-              </tbody>
-            </AdminTable>
+                </thead>
+                <tbody>
+                  {currentBookings.map(booking => (
+                    <tr key={booking.id}>
+                      <AdminTableCell>#{booking.id}</AdminTableCell>
+                      <AdminTableCell>#{booking.slotNumber}</AdminTableCell>
+                      <AdminTableCell>{booking.vehicleNumber}</AdminTableCell>
+                      <AdminTableCell>{booking.userName}</AdminTableCell>
+                      <AdminTableCell>{formatDateTime(booking.entryTime)}</AdminTableCell>
+                      <AdminTableCell>
+                        {booking.exitTime ? formatDateTime(booking.exitTime) : 'N/A'}
+                      </AdminTableCell>
+                      <AdminTableCell>{formatDuration(booking.duration)}</AdminTableCell>
+                      <AdminTableCell>
+                        <AdminStatusBadge status={booking.status}>
+                          {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                        </AdminStatusBadge>
+                      </AdminTableCell>
+                      <AdminTableCell>₹{booking.amount || 0}</AdminTableCell>
+                    </tr>
+                  ))}
+                </tbody>
+              </AdminTable>
 
-            {totalPages > 1 && (
-              <AdminPagination>
-                <AdminPageButton 
-                  onClick={() => dispatch({ type: 'SET_CURRENT_PAGE', payload: state.currentPage - 1 })}
-                  disabled={state.currentPage === 1}
-                >
-                  Previous
-                </AdminPageButton>
-                
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+              {totalPages > 1 && (
+                <AdminPagination>
                   <AdminPageButton
-                    key={page}
-                    active={page === state.currentPage}
-                    onClick={() => dispatch({ type: 'SET_CURRENT_PAGE', payload: page })}
+                    onClick={() => dispatch({ type: 'SET_CURRENT_PAGE', payload: state.currentPage - 1 })}
+                    disabled={state.currentPage === 1}
                   >
-                    {page}
+                    Previous
                   </AdminPageButton>
-                ))}
-                
-                <AdminPageButton 
-                  onClick={() => dispatch({ type: 'SET_CURRENT_PAGE', payload: state.currentPage + 1 })}
-                  disabled={state.currentPage === totalPages}
-                >
-                  Next
-                </AdminPageButton>
-              </AdminPagination>
-            )}
-          </>
-        )}
-      </AdminTableContainer>
-    </AdminBookingsContainer>
+
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                    <AdminPageButton
+                      key={page}
+                      active={page === state.currentPage}
+                      onClick={() => dispatch({ type: 'SET_CURRENT_PAGE', payload: page })}
+                    >
+                      {page}
+                    </AdminPageButton>
+                  ))}
+
+                  <AdminPageButton
+                    onClick={() => dispatch({ type: 'SET_CURRENT_PAGE', payload: state.currentPage + 1 })}
+                    disabled={state.currentPage === totalPages}
+                  >
+                    Next
+                  </AdminPageButton>
+                </AdminPagination>
+              )}
+            </>
+          )}
+        </AdminTableContainer>
+      </AdminBookingsContainer>
+    </>
   );
 };
 

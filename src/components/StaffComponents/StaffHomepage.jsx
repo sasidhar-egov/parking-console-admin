@@ -88,10 +88,10 @@ const BookingDetail = styled.div`
 `;
 
 const StatusBadge = styled.span`
-  background: ${props => 
+  background: ${props =>
     props.status === 'booked' ? '#ffc107' :
-    props.status === 'active' ? '#28a745' :
-    props.status === 'completed' ? '#6c757d' : '#dc3545'
+      props.status === 'active' ? '#28a745' :
+        props.status === 'completed' ? '#6c757d' : '#dc3545'
   };
   color: white;
   padding: 0.25rem 0.75rem;
@@ -153,19 +153,19 @@ const StaffDashboard = () => {
       // Get all slots
       const slots = await db.slots.toArray();
       const occupiedSlots = slots.filter(slot => slot.occupied);
-      
+
       // Get today's bookings
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
 
-    
+
       // Get active bookings
       const activeBookings = await db.bookings
         .where('status')
         .equals('active')
-        .toArray();      
+        .toArray();
 
       // Get recent bookings (last 10)
       const recentBookings = await db.bookings
@@ -174,12 +174,14 @@ const StaffDashboard = () => {
         .limit(10)
         .toArray();
 
-      dispatch({ type: 'SET_STATS', payload: {
-        totalSlots: slots.length,
-        occupiedSlots: occupiedSlots.length,
-        availableSlots: slots.length - occupiedSlots.length,
-        activeBookings: activeBookings.length,
-      }});
+      dispatch({
+        type: 'SET_STATS', payload: {
+          totalSlots: slots.length,
+          occupiedSlots: occupiedSlots.length,
+          availableSlots: slots.length - occupiedSlots.length,
+          activeBookings: activeBookings.length,
+        }
+      });
 
       dispatch({ type: 'SET_SLOTS', payload: slots });
       dispatch({ type: 'SET_RECENT_BOOKINGS', payload: recentBookings });
@@ -196,88 +198,90 @@ const StaffDashboard = () => {
   }, []);
 
   return (
-    <Container>
-        <StaffNavbar/>
-      <RefreshButton onClick={loadDashboardData} disabled={state.loading}>
-        {state.loading ? 'Loading...' : '🔄 Refresh Dashboard'}
-      </RefreshButton>
+    <>
+      <StaffNavbar currentPage="home"/>
+      <Container>
+        <RefreshButton onClick={loadDashboardData} disabled={state.loading}>
+          {state.loading ? 'Loading...' : '🔄 Refresh Dashboard'}
+        </RefreshButton>
 
-      <Grid>
-        <StatCard gradient="#667eea 0%, #764ba2 100%">
-          <StatNumber>{state.stats.totalSlots}</StatNumber>
-          <StatLabel>Total Slots</StatLabel>
-        </StatCard>
+        <Grid>
+          <StatCard gradient="#667eea 0%, #764ba2 100%">
+            <StatNumber>{state.stats.totalSlots}</StatNumber>
+            <StatLabel>Total Slots</StatLabel>
+          </StatCard>
 
-        <StatCard gradient="#28a745 0%, #20c997 100%">
-          <StatNumber>{state.stats.availableSlots}</StatNumber>
-          <StatLabel>Available Slots</StatLabel>
-        </StatCard>
+          <StatCard gradient="#28a745 0%, #20c997 100%">
+            <StatNumber>{state.stats.availableSlots}</StatNumber>
+            <StatLabel>Available Slots</StatLabel>
+          </StatCard>
 
-        <StatCard gradient="#dc3545 0%, #fd7e14 100%">
-          <StatNumber>{state.stats.occupiedSlots}</StatNumber>
-          <StatLabel>Occupied Slots</StatLabel>
-        </StatCard>
+          <StatCard gradient="#dc3545 0%, #fd7e14 100%">
+            <StatNumber>{state.stats.occupiedSlots}</StatNumber>
+            <StatLabel>Occupied Slots</StatLabel>
+          </StatCard>
 
-        <StatCard gradient="#ffc107 0%, #fd7e14 100%">
-          <StatNumber>{state.stats.activeBookings}</StatNumber>
-          <StatLabel>Active Bookings</StatLabel>
-        </StatCard>
+          <StatCard gradient="#ffc107 0%, #fd7e14 100%">
+            <StatNumber>{state.stats.activeBookings}</StatNumber>
+            <StatLabel>Active Bookings</StatLabel>
+          </StatCard>
 
-        
-      </Grid>
 
-      <Grid>
-        <Card>
-          <Title>🅿️ Parking Slots Overview</Title>
-          <SlotsGrid>
-            {state.slots.map((slot) => (
-              <SlotCard key={slot.id} occupied={slot.occupied}>
-                <div>{slot.number}</div>
-                {slot.occupied && (
-                  <div style={{ fontSize: '0.7rem', marginTop: '0.25rem' }}>
-                    {slot.vehicleNumber}
-                  </div>
-                )}
-              </SlotCard>
-            ))}
-          </SlotsGrid>
-        </Card>
+        </Grid>
 
-        <Card>
-          <Title>📋 Recent Bookings</Title>
-          {state.recentBookings.length === 0 ? (
-            <p>No recent bookings found.</p>
-          ) : (
-            state.recentBookings.slice(0, Math.min(state.recentBookings.length, 10)).map((booking) => (
-              <BookingCard key={booking.id}>
-                <BookingDetail>
-                  <span><strong>Slot:</strong> {booking.slotNumber}</span>
-                  <StatusBadge status={booking.status}>
-                    {booking.status.toUpperCase()}
-                  </StatusBadge>
-                </BookingDetail>
-                <BookingDetail>
-                  <span><strong>Vehicle:</strong> {booking.vehicleNumber}</span>
-                  <span><strong>Customer:</strong> {booking.userName}</span>
-                </BookingDetail>
-                <BookingDetail>
-                  <span><strong>Duration:</strong> {booking.duration}</span>
-                  <span><strong>Amount:</strong> ₹{booking.amount}</span>
-                </BookingDetail>
-                {booking.entryTime && (
+        <Grid>
+          <Card>
+            <Title>🅿️ Parking Slots Overview</Title>
+            <SlotsGrid>
+              {state.slots.map((slot) => (
+                <SlotCard key={slot.id} occupied={slot.occupied}>
+                  <div>{slot.number}</div>
+                  {slot.occupied && (
+                    <div style={{ fontSize: '0.7rem', marginTop: '0.25rem' }}>
+                      {slot.vehicleNumber}
+                    </div>
+                  )}
+                </SlotCard>
+              ))}
+            </SlotsGrid>
+          </Card>
+
+          <Card>
+            <Title>📋 Recent Bookings</Title>
+            {state.recentBookings.length === 0 ? (
+              <p>No recent bookings found.</p>
+            ) : (
+              state.recentBookings.slice(0, Math.min(state.recentBookings.length, 10)).map((booking) => (
+                <BookingCard key={booking.id}>
                   <BookingDetail>
-                    <span><strong>Entry:</strong> {new Date(booking.entryTime).toLocaleString()}</span>
-                    {booking.exitTime && (
-                      <span><strong>Exit:</strong> {new Date(booking.exitTime).toLocaleString()}</span>
-                    )}
+                    <span><strong>Slot:</strong> {booking.slotNumber}</span>
+                    <StatusBadge status={booking.status}>
+                      {booking.status.toUpperCase()}
+                    </StatusBadge>
                   </BookingDetail>
-                )}
-              </BookingCard>
-            ))
-          )}
-        </Card>
-      </Grid>
-    </Container>
+                  <BookingDetail>
+                    <span><strong>Vehicle:</strong> {booking.vehicleNumber}</span>
+                    <span><strong>Customer:</strong> {booking.userName}</span>
+                  </BookingDetail>
+                  <BookingDetail>
+                    <span><strong>Duration:</strong> {booking.duration}</span>
+                    <span><strong>Amount:</strong> ₹{booking.amount}</span>
+                  </BookingDetail>
+                  {booking.entryTime && (
+                    <BookingDetail>
+                      <span><strong>Entry:</strong> {new Date(booking.entryTime).toLocaleString()}</span>
+                      {booking.exitTime && (
+                        <span><strong>Exit:</strong> {new Date(booking.exitTime).toLocaleString()}</span>
+                      )}
+                    </BookingDetail>
+                  )}
+                </BookingCard>
+              ))
+            )}
+          </Card>
+        </Grid>
+      </Container>
+    </>
   );
 };
 

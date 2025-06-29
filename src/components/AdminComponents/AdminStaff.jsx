@@ -294,131 +294,135 @@ const AdminStaff = () => {
 
     if (state.loading) {
         return (
-            <AdminStaffContainer>
+            <>
                 <AdminNavbar currentPage="staff" />
+                <AdminStaffContainer>
 
-                <AdminTitle>Loading Staff...</AdminTitle>
-            </AdminStaffContainer>
+                    <AdminTitle>Loading Staff...</AdminTitle>
+                </AdminStaffContainer>
+            </>
         );
     }
 
     return (
-        <AdminStaffContainer>
+        <>
             <AdminNavbar currentPage="staff" />
+            <AdminStaffContainer>
 
-            <AdminHeader>
-                <AdminTitle>Staff Management</AdminTitle>
-                <AdminButton onClick={() => setShowAddModal(true)}>
-                    Add New Staff
-                </AdminButton>
-            </AdminHeader>
+                <AdminHeader>
+                    <AdminTitle>Staff Management</AdminTitle>
+                    <AdminButton onClick={() => setShowAddModal(true)}>
+                        Add New Staff
+                    </AdminButton>
+                </AdminHeader>
 
-            <AdminStaffGrid>
-                {state.staff.map(member => (
-                    <AdminStaffCard key={member.id}>
-                        <AdminDeleteButton onClick={() => handleDeleteStaff(member.id)}>
-                            ×
-                        </AdminDeleteButton>
-                        <AdminStaffName>{member.name}</AdminStaffName>
-                        <AdminStaffInfo>
-                            <AdminStaffLabel>Username:</AdminStaffLabel>
-                            <span>{member.username}</span>
-                        </AdminStaffInfo>
-                        <AdminStaffInfo>
-                            <AdminStaffLabel>Phone:</AdminStaffLabel>
-                            <span>{member.phone}</span>
-                        </AdminStaffInfo>
-                        <AdminStaffInfo>
-                            <AdminStaffLabel>Role:</AdminStaffLabel>
-                            <span>Staff</span>
-                        </AdminStaffInfo>
-                        <AdminBookingsButton onClick={() => handleViewBookings(member.name)}>
-                            View Bookings
-                        </AdminBookingsButton>
-                    </AdminStaffCard>
-                ))}
-            </AdminStaffGrid>
+                <AdminStaffGrid>
+                    {state.staff.map(member => (
+                        <AdminStaffCard key={member.id}>
+                            <AdminDeleteButton onClick={() => handleDeleteStaff(member.id)}>
+                                ×
+                            </AdminDeleteButton>
+                            <AdminStaffName>{member.name}</AdminStaffName>
+                            <AdminStaffInfo>
+                                <AdminStaffLabel>Username:</AdminStaffLabel>
+                                <span>{member.username}</span>
+                            </AdminStaffInfo>
+                            <AdminStaffInfo>
+                                <AdminStaffLabel>Phone:</AdminStaffLabel>
+                                <span>{member.phone}</span>
+                            </AdminStaffInfo>
+                            <AdminStaffInfo>
+                                <AdminStaffLabel>Role:</AdminStaffLabel>
+                                <span>Staff</span>
+                            </AdminStaffInfo>
+                            <AdminBookingsButton onClick={() => handleViewBookings(member.name)}>
+                                View Bookings
+                            </AdminBookingsButton>
+                        </AdminStaffCard>
+                    ))}
+                </AdminStaffGrid>
 
-            {showAddModal && (
-                <AdminModal>
-                    <AdminModalContent>
-                        <AdminModalTitle>Add New Staff Member</AdminModalTitle>
-                        <AdminInput
-                            name="name"
-                            placeholder="Full Name"
-                            value={formData.name}
-                            onChange={handleInputChange}
-                        />
-                        <AdminInput
-                            name="username"
-                            placeholder="Username"
-                            value={formData.username}
-                            onChange={handleInputChange}
-                        />
-                        <AdminInput
-                            name="phone"
-                            placeholder="Phone Number"
-                            value={formData.phone}
-                            onChange={handleInputChange}
-                        />
-                        <AdminInput
-                            name="password"
-                            type="password"
-                            placeholder="Password"
-                            value={formData.password}
-                            onChange={handleInputChange}
-                        />
-                        <AdminModalButtons>
-                            <AdminCancelButton onClick={() => setShowAddModal(false)}>
-                                Cancel
-                            </AdminCancelButton>
-                            <AdminButton onClick={handleAddStaff}>
-                                Add Staff
-                            </AdminButton>
-                        </AdminModalButtons>
-                    </AdminModalContent>
-                </AdminModal>
-            )}
+                {showAddModal && (
+                    <AdminModal>
+                        <AdminModalContent>
+                            <AdminModalTitle>Add New Staff Member</AdminModalTitle>
+                            <AdminInput
+                                name="name"
+                                placeholder="Full Name"
+                                value={formData.name}
+                                onChange={handleInputChange}
+                            />
+                            <AdminInput
+                                name="username"
+                                placeholder="Username"
+                                value={formData.username}
+                                onChange={handleInputChange}
+                            />
+                            <AdminInput
+                                name="phone"
+                                placeholder="Phone Number"
+                                value={formData.phone}
+                                onChange={handleInputChange}
+                            />
+                            <AdminInput
+                                name="password"
+                                type="password"
+                                placeholder="Password"
+                                value={formData.password}
+                                onChange={handleInputChange}
+                            />
+                            <AdminModalButtons>
+                                <AdminCancelButton onClick={() => setShowAddModal(false)}>
+                                    Cancel
+                                </AdminCancelButton>
+                                <AdminButton onClick={handleAddStaff}>
+                                    Add Staff
+                                </AdminButton>
+                            </AdminModalButtons>
+                        </AdminModalContent>
+                    </AdminModal>
+                )}
 
-            {showBookingsModal && (
-                <AdminModal>
-                    <AdminModalContent>
-                        <AdminModalTitle>Staff Bookings</AdminModalTitle>
-                        {selectedStaffBookings.length > 0 ? (
-                            <AdminTable>
-                                <thead>
-                                    <tr>
-                                        <AdminTableHeader>Slot</AdminTableHeader>
-                                        <AdminTableHeader>Vehicle</AdminTableHeader>
-                                        <AdminTableHeader>Entry Time</AdminTableHeader>
-                                        <AdminTableHeader>Status</AdminTableHeader>
-                                        <AdminTableHeader>Amount</AdminTableHeader>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {selectedStaffBookings.map(booking => (
-                                        <tr key={booking.id}>
-                                            <AdminTableCell>#{booking.slotNumber}</AdminTableCell>
-                                            <AdminTableCell>{booking.vehicleNumber}</AdminTableCell>
-                                            <AdminTableCell>{new Date(booking.entryTime).toLocaleString()}</AdminTableCell>
-                                            <AdminTableCell>{booking.status}</AdminTableCell>
-                                            <AdminTableCell>₹{booking.amount || 0}</AdminTableCell>
+                {showBookingsModal && (
+                    <AdminModal>
+                        <AdminModalContent>
+                            <AdminModalTitle>Staff Bookings</AdminModalTitle>
+                            {selectedStaffBookings.length > 0 ? (
+                                <AdminTable>
+                                    <thead>
+                                        <tr>
+                                            <AdminTableHeader>Slot</AdminTableHeader>
+                                            <AdminTableHeader>Vehicle</AdminTableHeader>
+                                            <AdminTableHeader>Entry Time</AdminTableHeader>
+                                            <AdminTableHeader>Status</AdminTableHeader>
+                                            <AdminTableHeader>Amount</AdminTableHeader>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </AdminTable>
-                        ) : (
-                            <p>No bookings found for this staff member.</p>
-                        )}
-                        <AdminModalButtons>
-                            <AdminCancelButton onClick={() => setShowBookingsModal(false)}>
-                                Close
-                            </AdminCancelButton>
-                        </AdminModalButtons>
-                    </AdminModalContent>
-                </AdminModal>
-            )}
-        </AdminStaffContainer>
+                                    </thead>
+                                    <tbody>
+                                        {selectedStaffBookings.map(booking => (
+                                            <tr key={booking.id}>
+                                                <AdminTableCell>#{booking.slotNumber}</AdminTableCell>
+                                                <AdminTableCell>{booking.vehicleNumber}</AdminTableCell>
+                                                <AdminTableCell>{new Date(booking.entryTime).toLocaleString()}</AdminTableCell>
+                                                <AdminTableCell>{booking.status}</AdminTableCell>
+                                                <AdminTableCell>₹{booking.amount || 0}</AdminTableCell>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </AdminTable>
+                            ) : (
+                                <p>No bookings found for this staff member.</p>
+                            )}
+                            <AdminModalButtons>
+                                <AdminCancelButton onClick={() => setShowBookingsModal(false)}>
+                                    Close
+                                </AdminCancelButton>
+                            </AdminModalButtons>
+                        </AdminModalContent>
+                    </AdminModal>
+                )}
+            </AdminStaffContainer>
+        </>
     );
 };
 

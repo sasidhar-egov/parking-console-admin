@@ -1,20 +1,21 @@
 import React, { useReducer, useEffect } from 'react';
 import { db } from '../../data/db';
 import styled from 'styled-components';
+import CustomerNavbarComponent from './CustomerNavbar';
 
 // Styled Components with customer prefix
 const CustomerOrdersContainer = styled.div`
   padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg,rgb(174, 174, 174) 0%,rgb(239, 235, 244) 100%);
   min-height: 100vh;
 `;
 
 const CustomerOrdersTitle = styled.h1`
   text-align: center;
-  color: white;
   margin-bottom: 30px;
   font-size: 2rem;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  color: 0 2px 4px rgba(67, 64, 64, 0.3);
 `;
 
 const CustomerOrdersGrid = styled.div`
@@ -182,7 +183,6 @@ const CustomerOrderButton = styled.button`
 
 const CustomerEmptyState = styled.div`
   text-align: center;
-  color: white;
   padding: 60px 20px;
 `;
 
@@ -291,89 +291,98 @@ const CustomerOrdersPage = () => {
 
   if (state.loading) {
     return (
-      <CustomerOrdersContainer>
-        <CustomerOrdersTitle>My Orders</CustomerOrdersTitle>
-        <CustomerLoadingContainer>
-          Loading your orders...
-        </CustomerLoadingContainer>
-      </CustomerOrdersContainer>
+      <>
+        <CustomerNavbarComponent />
+        <CustomerOrdersContainer>
+          <CustomerOrdersTitle>My Orders</CustomerOrdersTitle>
+          <CustomerLoadingContainer>
+            Loading your orders...
+          </CustomerLoadingContainer>
+        </CustomerOrdersContainer>
+      </>
     );
   }
 
   if (state.orders.length === 0) {
     return (
-      <CustomerOrdersContainer>
-        <CustomerOrdersTitle>My Orders</CustomerOrdersTitle>
-        <CustomerEmptyState>
-          <CustomerEmptyIcon>🚗</CustomerEmptyIcon>
-          <CustomerEmptyText>No parking orders yet</CustomerEmptyText>
-          <CustomerEmptySubtext>Book a parking slot to see your orders here</CustomerEmptySubtext>
-        </CustomerEmptyState>
-      </CustomerOrdersContainer>
+      <>
+        <CustomerNavbarComponent />
+        <CustomerOrdersContainer>
+          <CustomerOrdersTitle>My Orders</CustomerOrdersTitle>
+          <CustomerEmptyState>
+            <CustomerEmptyIcon>🚗</CustomerEmptyIcon>
+            <CustomerEmptyText>No parking orders yet</CustomerEmptyText>
+            <CustomerEmptySubtext>Book a parking slot to see your orders here</CustomerEmptySubtext>
+          </CustomerEmptyState>
+        </CustomerOrdersContainer>
+      </>
     );
   }
 
   return (
-    <CustomerOrdersContainer>
-      <CustomerOrdersTitle>My Orders</CustomerOrdersTitle>
+    <>
+      <CustomerNavbarComponent />
+      <CustomerOrdersContainer>
+        <CustomerOrdersTitle>My Orders</CustomerOrdersTitle>
 
-      <CustomerOrdersGrid>
-        {state.orders.map((order) => (
-          <CustomerOrderCard key={order.id}>
-            <CustomerOrderHeader>
-              <CustomerOrderSlot>Slot {order.slotNumber}</CustomerOrderSlot>
-              <CustomerOrderStatus status={order.status}>
-                {order.status}
-              </CustomerOrderStatus>
-            </CustomerOrderHeader>
+        <CustomerOrdersGrid>
+          {state.orders.map((order) => (
+            <CustomerOrderCard key={order.id}>
+              <CustomerOrderHeader>
+                <CustomerOrderSlot>Slot {order.slotNumber}</CustomerOrderSlot>
+                <CustomerOrderStatus status={order.status}>
+                  {order.status}
+                </CustomerOrderStatus>
+              </CustomerOrderHeader>
 
-            <CustomerOrderDetails>
-              <CustomerOrderDetail>
-                <CustomerOrderLabel>Vehicle Number</CustomerOrderLabel>
-                <CustomerOrderValue>{order.vehicleNumber}</CustomerOrderValue>
-              </CustomerOrderDetail>
+              <CustomerOrderDetails>
+                <CustomerOrderDetail>
+                  <CustomerOrderLabel>Vehicle Number</CustomerOrderLabel>
+                  <CustomerOrderValue>{order.vehicleNumber}</CustomerOrderValue>
+                </CustomerOrderDetail>
 
-              <CustomerOrderDetail>
-                <CustomerOrderLabel>Duration</CustomerOrderLabel>
-                <CustomerOrderValue>{order.duration}</CustomerOrderValue>
-              </CustomerOrderDetail>
+                <CustomerOrderDetail>
+                  <CustomerOrderLabel>Duration</CustomerOrderLabel>
+                  <CustomerOrderValue>{order.duration}</CustomerOrderValue>
+                </CustomerOrderDetail>
 
-              <CustomerOrderDetail>
-                <CustomerOrderLabel>Entry Time</CustomerOrderLabel>
-                <CustomerOrderValue>{formatDateTime(order.entryTime)}</CustomerOrderValue>
-              </CustomerOrderDetail>
+                <CustomerOrderDetail>
+                  <CustomerOrderLabel>Entry Time</CustomerOrderLabel>
+                  <CustomerOrderValue>{formatDateTime(order.entryTime)}</CustomerOrderValue>
+                </CustomerOrderDetail>
 
-              <CustomerOrderDetail>
-                <CustomerOrderLabel>Exit Time</CustomerOrderLabel>
-                <CustomerOrderValue>{formatDateTime(order.exitTime)}</CustomerOrderValue>
-              </CustomerOrderDetail>
+                <CustomerOrderDetail>
+                  <CustomerOrderLabel>Exit Time</CustomerOrderLabel>
+                  <CustomerOrderValue>{formatDateTime(order.exitTime)}</CustomerOrderValue>
+                </CustomerOrderDetail>
 
-              <CustomerOrderDetail>
-                <CustomerOrderLabel>Amount</CustomerOrderLabel>
-                <CustomerOrderValue>₹{order.amount}</CustomerOrderValue>
-              </CustomerOrderDetail>
+                <CustomerOrderDetail>
+                  <CustomerOrderLabel>Amount</CustomerOrderLabel>
+                  <CustomerOrderValue>₹{order.amount}</CustomerOrderValue>
+                </CustomerOrderDetail>
 
-              <CustomerOrderDetail>
-                <CustomerOrderLabel>Booking ID</CustomerOrderLabel>
-                <CustomerOrderValue>#{order.id.toString().padStart(4, '0')}</CustomerOrderValue>
-              </CustomerOrderDetail>
-            </CustomerOrderDetails>
+                <CustomerOrderDetail>
+                  <CustomerOrderLabel>Booking ID</CustomerOrderLabel>
+                  <CustomerOrderValue>#{order.id.toString().padStart(4, '0')}</CustomerOrderValue>
+                </CustomerOrderDetail>
+              </CustomerOrderDetails>
 
-            {/* Only show cancel button for 'booked' status */}
-            {order.status === 'booked' && (
-              <CustomerOrderActions>
-                <CustomerOrderButton
-                  className="cancel"
-                  onClick={() => handleCancelOrder(order.id)}
-                >
-                  Cancel Booking
-                </CustomerOrderButton>
-              </CustomerOrderActions>
-            )}
-          </CustomerOrderCard>
-        ))}
-      </CustomerOrdersGrid>
-    </CustomerOrdersContainer>
+              {/* Only show cancel button for 'booked' status */}
+              {order.status === 'booked' && (
+                <CustomerOrderActions>
+                  <CustomerOrderButton
+                    className="cancel"
+                    onClick={() => handleCancelOrder(order.id)}
+                  >
+                    Cancel Booking
+                  </CustomerOrderButton>
+                </CustomerOrderActions>
+              )}
+            </CustomerOrderCard>
+          ))}
+        </CustomerOrdersGrid>
+      </CustomerOrdersContainer>
+    </>
   );
 };
 

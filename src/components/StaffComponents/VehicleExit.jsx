@@ -1,6 +1,7 @@
 import React, { useReducer, useEffect } from 'react';
 import styled from 'styled-components';
 import { db } from '../../data/db'; // Import your database
+import StaffNavbar from './StaffNavBar';
 
 const Container = styled.div`
   max-width: 800px;
@@ -87,10 +88,10 @@ const BookingDetail = styled.div`
 `;
 
 const StatusBadge = styled.span`
-  background: ${props => 
+  background: ${props =>
     props.status === 'booked' ? '#ffc107' :
-    props.status === 'active' ? '#28a745' :
-    props.status === 'completed' ? '#6c757d' : '#dc3545'
+      props.status === 'active' ? '#28a745' :
+        props.status === 'completed' ? '#6c757d' : '#dc3545'
   };
   color: white;
   padding: 0.25rem 0.75rem;
@@ -103,17 +104,17 @@ const Message = styled.div`
   padding: 1rem;
   border-radius: 10px;
   margin-bottom: 1rem;
-  background: ${props => 
+  background: ${props =>
     props.type === 'success' ? '#d4edda' :
-    props.type === 'error' ? '#f8d7da' : '#d1ecf1'
+      props.type === 'error' ? '#f8d7da' : '#d1ecf1'
   };
-  color: ${props => 
+  color: ${props =>
     props.type === 'success' ? '#155724' :
-    props.type === 'error' ? '#721c24' : '#0c5460'
+      props.type === 'error' ? '#721c24' : '#0c5460'
   };
-  border: 1px solid ${props => 
+  border: 1px solid ${props =>
     props.type === 'success' ? '#c3e6cb' :
-    props.type === 'error' ? '#f5c6cb' : '#bee5eb'
+      props.type === 'error' ? '#f5c6cb' : '#bee5eb'
   };
 `;
 
@@ -169,7 +170,7 @@ const VehicleExit = () => {
 
   const searchActiveBookings = async () => {
     if (!state.vehicleNumber.trim()) {
-      dispatch({ type: 'SET_MESSAGE', payload: { type: 'error', text: 'Please enter vehicle number' }});
+      dispatch({ type: 'SET_MESSAGE', payload: { type: 'error', text: 'Please enter vehicle number' } });
       return;
     }
 
@@ -183,20 +184,24 @@ const VehicleExit = () => {
         .toArray();
 
       const activeBookings = bookings.filter(booking => booking.status === 'active');
-      
+
       dispatch({ type: 'SET_ACTIVE_BOOKINGS', payload: activeBookings });
-      
+
       if (activeBookings.length === 0) {
-        dispatch({ type: 'SET_MESSAGE', payload: { 
-          type: 'error', 
-          text: 'No active parking found for this vehicle number' 
-        }});
+        dispatch({
+          type: 'SET_MESSAGE', payload: {
+            type: 'error',
+            text: 'No active parking found for this vehicle number'
+          }
+        });
       }
     } catch (error) {
-      dispatch({ type: 'SET_MESSAGE', payload: { 
-        type: 'error', 
-        text: 'Error searching bookings: ' + error.message 
-      }});
+      dispatch({
+        type: 'SET_MESSAGE', payload: {
+          type: 'error',
+          text: 'Error searching bookings: ' + error.message
+        }
+      });
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
@@ -204,12 +209,12 @@ const VehicleExit = () => {
 
   const markVehicleExit = async (booking) => {
     dispatch({ type: 'SET_LOADING', payload: true });
-    
+
     try {
       const exitTime = new Date().toISOString();
       const actualHours = calculateDuration(booking.entryTime);
       const finalAmount = calculateAmount(actualHours);
-      
+
       // Update booking status to completed and set exit time
       await db.bookings.update(booking.id, {
         status: 'completed',
@@ -226,96 +231,103 @@ const VehicleExit = () => {
         entryTime: null
       });
 
-      dispatch({ type: 'SET_MESSAGE', payload: { 
-        type: 'success', 
-        text: `Vehicle ${booking.vehicleNumber} successfully exited from slot ${booking.slotNumber}. Total Amount: ₹${finalAmount}` 
-      }});
-      
+      dispatch({
+        type: 'SET_MESSAGE', payload: {
+          type: 'success',
+          text: `Vehicle ${booking.vehicleNumber} successfully exited from slot ${booking.slotNumber}. Total Amount: ₹${finalAmount}`
+        }
+      });
+
       // Clear form after success
       setTimeout(() => {
         dispatch({ type: 'CLEAR_FORM' });
       }, 3000);
 
     } catch (error) {
-      dispatch({ type: 'SET_MESSAGE', payload: { 
-        type: 'error', 
-        text: 'Error marking exit: ' + error.message 
-      }});
+      dispatch({
+        type: 'SET_MESSAGE', payload: {
+          type: 'error',
+          text: 'Error marking exit: ' + error.message
+        }
+      });
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
   };
 
   return (
-    <Container>
-      <Card>
-        <Title>🚪 Vehicle Exit</Title>
-        
-        {state.message && (
-          <Message type={state.message.type}>
-            {state.message.text}
-          </Message>
-        )}
+    <>
+      <StaffNavbar currentPage="vehicle-exit" />
+      <Container>
+        <Card>
+          <Title>🚪 Vehicle Exit</Title>
 
-        <SearchSection>
-          <Input
-            type="text"
-            placeholder="Enter Vehicle Number (e.g., KA01MN1234)"
-            value={state.vehicleNumber}
-            onChange={(e) => dispatch({ type: 'SET_VEHICLE_NUMBER', payload: e.target.value.toUpperCase() })}
-            onKeyPress={(e) => e.key === 'Enter' && searchActiveBookings()}
-          />
-          <SearchButton onClick={searchActiveBookings} disabled={state.loading}>
-            {state.loading ? 'Searching...' : 'Search Active Parking'}
-          </SearchButton>
-        </SearchSection>
+          {state.message && (
+            <Message type={state.message.type}>
+              {state.message.text}
+            </Message>
+          )}
 
-        {state.activeBookings.length > 0 && (
-          <div>
-            <h3>Active Parking for Exit:</h3>
-            {state.activeBookings.map((booking) => {
-              const actualHours = calculateDuration(booking.entryTime);
-              const finalAmount = calculateAmount(actualHours);
-              
-              return (
-                <BookingCard key={booking.id}>
-                  <BookingDetail>
-                    <span><strong>Slot:</strong> {booking.slotNumber}</span>
-                    <StatusBadge status={booking.status}>{booking.status.toUpperCase()}</StatusBadge>
-                  </BookingDetail>
-                  <BookingDetail>
-                    <span><strong>Vehicle:</strong> {booking.vehicleNumber}</span>
-                    <span><strong>Customer:</strong> {booking.userName}</span>
-                  </BookingDetail>
-                  <BookingDetail>
-                    <span><strong>Entry Time:</strong> {new Date(booking.entryTime).toLocaleString()}</span>
-                  </BookingDetail>
-                  
-                  <TimeInfo>
+          <SearchSection>
+            <Input
+              type="text"
+              placeholder="Enter Vehicle Number (e.g., KA01MN1234)"
+              value={state.vehicleNumber}
+              onChange={(e) => dispatch({ type: 'SET_VEHICLE_NUMBER', payload: e.target.value.toUpperCase() })}
+              onKeyPress={(e) => e.key === 'Enter' && searchActiveBookings()}
+            />
+            <SearchButton onClick={searchActiveBookings} disabled={state.loading}>
+              {state.loading ? 'Searching...' : 'Search Active Parking'}
+            </SearchButton>
+          </SearchSection>
+
+          {state.activeBookings.length > 0 && (
+            <div>
+              <h3>Active Parking for Exit:</h3>
+              {state.activeBookings.map((booking) => {
+                const actualHours = calculateDuration(booking.entryTime);
+                const finalAmount = calculateAmount(actualHours);
+
+                return (
+                  <BookingCard key={booking.id}>
                     <BookingDetail>
-                      <span><strong>Parked Duration:</strong> {actualHours} hours</span>
-                      <span><strong>Total Amount:</strong> ₹{finalAmount}</span>
+                      <span><strong>Slot:</strong> {booking.slotNumber}</span>
+                      <StatusBadge status={booking.status}>{booking.status.toUpperCase()}</StatusBadge>
                     </BookingDetail>
                     <BookingDetail>
-                      <span><strong>Rate:</strong> ₹30 per hour</span>
-                      <span><strong>Exit Time:</strong> {new Date().toLocaleString()}</span>
+                      <span><strong>Vehicle:</strong> {booking.vehicleNumber}</span>
+                      <span><strong>Customer:</strong> {booking.userName}</span>
                     </BookingDetail>
-                  </TimeInfo>
-                  
-                  <Button 
-                    onClick={() => markVehicleExit(booking)}
-                    disabled={state.loading}
-                    style={{ marginTop: '1rem' }}
-                  >
-                    {state.loading ? 'Processing Exit...' : 'Mark Vehicle Exited'}
-                  </Button>
-                </BookingCard>
-              );
-            })}
-          </div>
-        )}
-      </Card>
-    </Container>
+                    <BookingDetail>
+                      <span><strong>Entry Time:</strong> {new Date(booking.entryTime).toLocaleString()}</span>
+                    </BookingDetail>
+
+                    <TimeInfo>
+                      <BookingDetail>
+                        <span><strong>Parked Duration:</strong> {actualHours} hours</span>
+                        <span><strong>Total Amount:</strong> ₹{finalAmount}</span>
+                      </BookingDetail>
+                      <BookingDetail>
+                        <span><strong>Rate:</strong> ₹30 per hour</span>
+                        <span><strong>Exit Time:</strong> {new Date().toLocaleString()}</span>
+                      </BookingDetail>
+                    </TimeInfo>
+
+                    <Button
+                      onClick={() => markVehicleExit(booking)}
+                      disabled={state.loading}
+                      style={{ marginTop: '1rem' }}
+                    >
+                      {state.loading ? 'Processing Exit...' : 'Mark Vehicle Exited'}
+                    </Button>
+                  </BookingCard>
+                );
+              })}
+            </div>
+          )}
+        </Card>
+      </Container>
+    </>
   );
 };
 

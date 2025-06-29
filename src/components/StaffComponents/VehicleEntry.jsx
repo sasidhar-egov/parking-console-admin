@@ -1,6 +1,7 @@
 import React, { useReducer, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { db } from '../../data/db'; // Import your database
+import StaffNavbar from './StaffNavBar';
 
 const Container = styled.div`
   max-width: 800px;
@@ -83,10 +84,10 @@ const BookingDetail = styled.div`
 `;
 
 const StatusBadge = styled.span`
-  background: ${props => 
+  background: ${props =>
     props.status === 'booked' ? '#ffc107' :
-    props.status === 'active' ? '#28a745' :
-    props.status === 'completed' ? '#6c757d' : '#dc3545'
+      props.status === 'active' ? '#28a745' :
+        props.status === 'completed' ? '#6c757d' : '#dc3545'
   };
   color: white;
   padding: 0.25rem 0.75rem;
@@ -99,17 +100,17 @@ const Message = styled.div`
   padding: 1rem;
   border-radius: 10px;
   margin-bottom: 1rem;
-  background: ${props => 
+  background: ${props =>
     props.type === 'success' ? '#d4edda' :
-    props.type === 'error' ? '#f8d7da' : '#d1ecf1'
+      props.type === 'error' ? '#f8d7da' : '#d1ecf1'
   };
-  color: ${props => 
+  color: ${props =>
     props.type === 'success' ? '#155724' :
-    props.type === 'error' ? '#721c24' : '#0c5460'
+      props.type === 'error' ? '#721c24' : '#0c5460'
   };
-  border: 1px solid ${props => 
+  border: 1px solid ${props =>
     props.type === 'success' ? '#c3e6cb' :
-    props.type === 'error' ? '#f5c6cb' : '#bee5eb'
+      props.type === 'error' ? '#f5c6cb' : '#bee5eb'
   };
 `;
 
@@ -145,7 +146,7 @@ const VehicleEntry = () => {
 
   const searchBookings = async () => {
     if (!state.vehicleNumber.trim()) {
-      dispatch({ type: 'SET_MESSAGE', payload: { type: 'error', text: 'Please enter vehicle number' }});
+      dispatch({ type: 'SET_MESSAGE', payload: { type: 'error', text: 'Please enter vehicle number' } });
       return;
     }
 
@@ -159,20 +160,24 @@ const VehicleEntry = () => {
         .toArray();
 
       const bookedBookings = bookings.filter(booking => booking.status === 'booked');
-      
+
       dispatch({ type: 'SET_BOOKINGS', payload: bookedBookings });
-      
+
       if (bookedBookings.length === 0) {
-        dispatch({ type: 'SET_MESSAGE', payload: { 
-          type: 'error', 
-          text: 'No booked parking found for this vehicle number' 
-        }});
+        dispatch({
+          type: 'SET_MESSAGE', payload: {
+            type: 'error',
+            text: 'No booked parking found for this vehicle number'
+          }
+        });
       }
     } catch (error) {
-      dispatch({ type: 'SET_MESSAGE', payload: { 
-        type: 'error', 
-        text: 'Error searching bookings: ' + error.message 
-      }});
+      dispatch({
+        type: 'SET_MESSAGE', payload: {
+          type: 'error',
+          text: 'Error searching bookings: ' + error.message
+        }
+      });
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
@@ -180,10 +185,10 @@ const VehicleEntry = () => {
 
   const markVehicleEntry = async (booking) => {
     dispatch({ type: 'SET_LOADING', payload: true });
-    
+
     try {
       const entryTime = new Date().toISOString();
-      
+
       // Update booking status to active and set entry time
       await db.bookings.update(booking.id, {
         status: 'active',
@@ -198,84 +203,91 @@ const VehicleEntry = () => {
         entryTime: entryTime
       });
 
-      dispatch({ type: 'SET_MESSAGE', payload: { 
-        type: 'success', 
-        text: `Vehicle ${booking.vehicleNumber} successfully entered at slot ${booking.slotNumber}` 
-      }});
-      
+      dispatch({
+        type: 'SET_MESSAGE', payload: {
+          type: 'success',
+          text: `Vehicle ${booking.vehicleNumber} successfully entered at slot ${booking.slotNumber}`
+        }
+      });
+
       // Clear form after success
       setTimeout(() => {
         dispatch({ type: 'CLEAR_FORM' });
       }, 2000);
 
     } catch (error) {
-      dispatch({ type: 'SET_MESSAGE', payload: { 
-        type: 'error', 
-        text: 'Error marking entry: ' + error.message 
-      }});
+      dispatch({
+        type: 'SET_MESSAGE', payload: {
+          type: 'error',
+          text: 'Error marking entry: ' + error.message
+        }
+      });
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
   };
 
   return (
-    <Container>
-      <Card>
-        <Title>🚗 Vehicle Entry</Title>
-        
-        {state.message && (
-          <Message type={state.message.type}>
-            {state.message.text}
-          </Message>
-        )}
+    <>
+      <StaffNavbar currentPage="vehicle-entry"/>
+      <Container>
+        <Card>
+          <Title>🚗 Vehicle Entry</Title>
 
-        <SearchSection>
-          <Input
-            type="text"
-            placeholder="Enter Vehicle Number (e.g., KA01MN1234)"
-            value={state.vehicleNumber}
-            onChange={(e) => dispatch({ type: 'SET_VEHICLE_NUMBER', payload: e.target.value.toUpperCase() })}
-            onKeyPress={(e) => e.key === 'Enter' && searchBookings()}
-          />
-          <Button onClick={searchBookings} disabled={state.loading}>
-            {state.loading ? 'Searching...' : 'Search Bookings'}
-          </Button>
-        </SearchSection>
+          {state.message && (
+            <Message type={state.message.type}>
+              {state.message.text}
+            </Message>
+          )}
 
-        {state.bookings.length > 0 && (
-          <div>
-            <h3>Available Bookings for Entry:</h3>
-            {state.bookings.map((booking) => (
-              <BookingCard key={booking.id}>
-                <BookingDetail>
-                  <span><strong>Slot:</strong> {booking.slotNumber}</span>
-                  <StatusBadge status={booking.status}>{booking.status.toUpperCase()}</StatusBadge>
-                </BookingDetail>
-                <BookingDetail>
-                  <span><strong>Vehicle:</strong> {booking.vehicleNumber}</span>
-                  <span><strong>Customer:</strong> {booking.userName}</span>
-                </BookingDetail>
-                <BookingDetail>
-                  <span><strong>Duration:</strong> {booking.duration}</span>
-                  <span><strong>Amount:</strong> ₹{booking.amount}</span>
-                </BookingDetail>
-                <BookingDetail>
-                  <span><strong>Scheduled Entry:</strong> {new Date(booking.entryTime).toLocaleString()}</span>
-                </BookingDetail>
-                
-                <Button 
-                  onClick={() => markVehicleEntry(booking)}
-                  disabled={state.loading}
-                  style={{ marginTop: '1rem' }}
-                >
-                  {state.loading ? 'Processing...' : 'Mark Vehicle Entered'}
-                </Button>
-              </BookingCard>
-            ))}
-          </div>
-        )}
-      </Card>
-    </Container>
+          <SearchSection>
+            <Input
+              type="text"
+              placeholder="Enter Vehicle Number (e.g., KA01MN1234)"
+              value={state.vehicleNumber}
+              onChange={(e) => dispatch({ type: 'SET_VEHICLE_NUMBER', payload: e.target.value.toUpperCase() })}
+              onKeyPress={(e) => e.key === 'Enter' && searchBookings()}
+            />
+            <Button onClick={searchBookings} disabled={state.loading}>
+              {state.loading ? 'Searching...' : 'Search Bookings'}
+            </Button>
+          </SearchSection>
+
+          {state.bookings.length > 0 && (
+            <div>
+              <h3>Available Bookings for Entry:</h3>
+              {state.bookings.map((booking) => (
+                <BookingCard key={booking.id}>
+                  <BookingDetail>
+                    <span><strong>Slot:</strong> {booking.slotNumber}</span>
+                    <StatusBadge status={booking.status}>{booking.status.toUpperCase()}</StatusBadge>
+                  </BookingDetail>
+                  <BookingDetail>
+                    <span><strong>Vehicle:</strong> {booking.vehicleNumber}</span>
+                    <span><strong>Customer:</strong> {booking.userName}</span>
+                  </BookingDetail>
+                  <BookingDetail>
+                    <span><strong>Duration:</strong> {booking.duration}</span>
+                    <span><strong>Amount:</strong> ₹{booking.amount}</span>
+                  </BookingDetail>
+                  <BookingDetail>
+                    <span><strong>Scheduled Entry:</strong> {new Date(booking.entryTime).toLocaleString()}</span>
+                  </BookingDetail>
+
+                  <Button
+                    onClick={() => markVehicleEntry(booking)}
+                    disabled={state.loading}
+                    style={{ marginTop: '1rem' }}
+                  >
+                    {state.loading ? 'Processing...' : 'Mark Vehicle Entered'}
+                  </Button>
+                </BookingCard>
+              ))}
+            </div>
+          )}
+        </Card>
+      </Container>
+    </>
   );
 };
 

@@ -50,6 +50,7 @@ const AdminSlotCard = styled.div`
   border: 2px solid ${props => props.occupied ? '#dc3545' : '#28a745'};
   position: relative;
   transition: transform 0.3s ease;
+  min-height:20vh;
   
   &:hover {
     transform: translateY(-5px);
@@ -201,15 +202,15 @@ const AdminSlots = () => {
     const handleAddSlot = async () => {
         if (!slotNumber.trim()) return;
 
+        console.log("hlllo");
         try {
-            const existingSlot = await db.slots.where('number').equals(parseInt(slotNumber)).first();
+            const existingSlot = await db.slots.where('number').equals(slotNumber).first();
             if (existingSlot) {
                 alert('Slot number already exists!');
                 return;
             }
-
             const newSlot = {
-                number: parseInt(slotNumber),
+                number: slotNumber,
                 occupied: false,
                 vehicleNumber: null,
                 userName: null,
@@ -238,70 +239,74 @@ const AdminSlots = () => {
 
     if (state.loading) {
         return (
-            <AdminSlotsContainer>
+            <>
                 <AdminNavbar currentPage="slots" />
-                <AdminTitle>Loading Slots...</AdminTitle>
-            </AdminSlotsContainer>
+                <AdminSlotsContainer>
+                    <AdminTitle>Loading Slots...</AdminTitle>
+                </AdminSlotsContainer>
+            </>
         );
     }
 
     return (
-        <AdminSlotsContainer>
+        <>
             <AdminNavbar currentPage="slots" />
+            <AdminSlotsContainer>
 
-            <AdminHeader>
-                <AdminTitle>Slot Management</AdminTitle>
-                <AdminButton onClick={() => setShowModal(true)}>
-                    Add New Slot
-                </AdminButton>
-            </AdminHeader>
+                <AdminHeader>
+                    <AdminTitle>Slot Management</AdminTitle>
+                    <AdminButton onClick={() => setShowModal(true)}>
+                        Add New Slot
+                    </AdminButton>
+                </AdminHeader>
 
-            <AdminSlotsGrid>
-                {state.slots.map(slot => (
-                    <AdminSlotCard key={slot.id} occupied={slot.occupied}>
-                        <AdminDeleteButton onClick={() => handleDeleteSlot(slot.id)}>
-                            ×
-                        </AdminDeleteButton>
-                        <AdminSlotNumber>Slot #{slot.number}</AdminSlotNumber>
-                        <AdminSlotStatus>
-                            <AdminStatusDot occupied={slot.occupied} />
-                            <span>{slot.occupied ? 'Occupied' : 'Available'}</span>
-                        </AdminSlotStatus>
-                        {slot.occupied && (
-                            <>
-                                <AdminSlotInfo>Vehicle: {slot.vehicleNumber}</AdminSlotInfo>
-                                <AdminSlotInfo>User: {slot.userName}</AdminSlotInfo>
-                                <AdminSlotInfo>
-                                    Entry: {new Date(slot.entryTime).toLocaleString()}
-                                </AdminSlotInfo>
-                            </>
-                        )}
-                    </AdminSlotCard>
-                ))}
-            </AdminSlotsGrid>
+                <AdminSlotsGrid>
+                    {state.slots.map(slot => (
+                        <AdminSlotCard key={slot.id} occupied={slot.occupied}>
+                            <AdminDeleteButton onClick={() => handleDeleteSlot(slot.id)}>
+                                ×
+                            </AdminDeleteButton>
+                            <AdminSlotNumber>Slot #{slot.number}</AdminSlotNumber>
+                            <AdminSlotStatus>
+                                <AdminStatusDot occupied={slot.occupied} />
+                                <span>{slot.occupied ? 'Occupied' : 'Available'}</span>
+                            </AdminSlotStatus>
+                            {slot.occupied && (
+                                <>
+                                    <AdminSlotInfo>Vehicle: {slot.vehicleNumber}</AdminSlotInfo>
+                                    <AdminSlotInfo>User: {slot.userName}</AdminSlotInfo>
+                                    <AdminSlotInfo>
+                                        Entry: {new Date(slot.entryTime).toLocaleString()}
+                                    </AdminSlotInfo>
+                                </>
+                            )}
+                        </AdminSlotCard>
+                    ))}
+                </AdminSlotsGrid>
 
-            {showModal && (
-                <AdminModal>
-                    <AdminModalContent>
-                        <AdminModalTitle>Add New Slot</AdminModalTitle>
-                        <AdminInput
-                            type="number"
-                            placeholder="Slot Number"
-                            value={slotNumber}
-                            onChange={(e) => setSlotNumber(e.target.value)}
-                        />
-                        <AdminModalButtons>
-                            <AdminCancelButton onClick={() => setShowModal(false)}>
-                                Cancel
-                            </AdminCancelButton>
-                            <AdminButton onClick={handleAddSlot}>
-                                Add Slot
-                            </AdminButton>
-                        </AdminModalButtons>
-                    </AdminModalContent>
-                </AdminModal>
-            )}
-        </AdminSlotsContainer>
+                {showModal && (
+                    <AdminModal>
+                        <AdminModalContent>
+                            <AdminModalTitle>Add New Slot</AdminModalTitle>
+                            <AdminInput
+                                type="text"
+                                placeholder="Slot Number"
+                                value={slotNumber}
+                                onChange={(e) => setSlotNumber(e.target.value)}
+                            />
+                            <AdminModalButtons>
+                                <AdminCancelButton onClick={() => setShowModal(false)}>
+                                    Cancel
+                                </AdminCancelButton>
+                                <AdminButton onClick={handleAddSlot}>
+                                    Add Slot
+                                </AdminButton>
+                            </AdminModalButtons>
+                        </AdminModalContent>
+                    </AdminModal>
+                )}
+            </AdminSlotsContainer>
+        </>
     );
 };
 

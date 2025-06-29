@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const NavbarContainer = styled.nav`
@@ -53,7 +54,8 @@ const UserInfo = styled.div`
   gap: 1rem;
 `;
 
-const StaffNavbar = ({ currentPage, onPageChange, staffName = "Staff Member" }) => {
+const StaffNavbar = (props) => {
+  const navigate=useNavigate()
   return (
     <NavbarContainer>
       <NavContent>
@@ -61,27 +63,27 @@ const StaffNavbar = ({ currentPage, onPageChange, staffName = "Staff Member" }) 
         
         <NavButtons>
           <NavButton 
-            active={currentPage === 'entry'} 
-            onClick={() => onPageChange('entry')}
+            active={props.currentPage === 'vehicle-entry'} 
+            onClick={() => navigate(`/staff/vehicle-entry`)}
           >
             Vehicle Entry
           </NavButton>
           <NavButton 
-            active={currentPage === 'exit'} 
-            onClick={() => onPageChange('exit')}
+            active={props.currentPage === 'vehicle-exit'} 
+            onClick={() => navigate(`/staff/vehicle-exit`)}
           >
             Vehicle Exit
           </NavButton>
           <NavButton 
-            active={currentPage === 'dashboard'} 
-            onClick={() => onPageChange('dashboard')}
+            active={props.currentPage === 'home'} 
+            onClick={() => navigate(`/staff/home`)}
           >
             Dashboard
           </NavButton>
         </NavButtons>
 
         <UserInfo>
-          <span>👤 {staffName}</span>
+          <span>👤 {localStorage.getItem("username")}</span>
           <NavButton onClick={() => window.location.reload()}>
             Logout
           </NavButton>

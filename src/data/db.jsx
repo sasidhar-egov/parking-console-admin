@@ -107,9 +107,9 @@ export const createDummySlots = async () => {
 };
 
 // Function to create some dummy bookings
+// Function to create some dummy bookings
 export const createDummyBookings = async () => {
   try {
-    // Check if bookings already exist
     const existingBookings = await db.bookings.count();
     if (existingBookings > 0) {
       console.log('Dummy bookings already exist');
@@ -118,7 +118,6 @@ export const createDummyBookings = async () => {
 
     const now = new Date();
     const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-    const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
     const dummyBookings = [
       // Active booking for customer1
@@ -127,13 +126,12 @@ export const createDummyBookings = async () => {
         slotNumber: 'P005',
         vehicleNumber: 'KA01MN1234',
         userName: 'customer1',
-        entryTime: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-        exitTime: new Date(now.getTime() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
+        entryTime: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString(),
+        exitTime: new Date(now.getTime() + 2 * 60 * 60 * 1000).toISOString(),
         status: 'active',
         duration: '4 hours',
         amount: 120
       },
-      
       // Completed booking for customer1
       {
         slotId: 12,
@@ -146,7 +144,6 @@ export const createDummyBookings = async () => {
         duration: '9 hours',
         amount: 270
       },
-      
       // Cancelled booking for customer1
       {
         slotId: 8,
@@ -159,20 +156,18 @@ export const createDummyBookings = async () => {
         duration: '2 hours',
         amount: 60
       },
-      
       // Active booking for customer2
       {
         slotId: 15,
         slotNumber: 'P015',
         vehicleNumber: 'KA04EF3456',
         userName: 'customer2',
-        entryTime: new Date(now.getTime() - 1 * 60 * 60 * 1000).toISOString(), // 1 hour ago
-        exitTime: new Date(now.getTime() + 3 * 60 * 60 * 1000).toISOString(), // 3 hours from now
+        entryTime: new Date(now.getTime() - 1 * 60 * 60 * 1000).toISOString(),
+        exitTime: new Date(now.getTime() + 3 * 60 * 60 * 1000).toISOString(),
         status: 'active',
         duration: '4 hours',
         amount: 120
       },
-      
       // Completed booking for customer3
       {
         slotId: 20,
@@ -184,35 +179,46 @@ export const createDummyBookings = async () => {
         status: 'completed',
         duration: '5 hours',
         amount: 150
+      },
+      // Booked booking for customer2 (newly added)
+      {
+        slotId: 22,
+        slotNumber: 'P022',
+        vehicleNumber: 'KA06IJ4321',
+        userName: 'customer2',
+        entryTime: null,
+        exitTime: null,
+        status: 'booked',
+        duration: null,
+        amount: 0
       }
     ];
 
-    // Add bookings to database
     await db.bookings.bulkAdd(dummyBookings);
-    
-    // Update slots for active bookings
-    await db.slots.update(5, { 
-      occupied: true, 
-      vehicleNumber: 'KA01MN1234', 
+
+    // Mark active slots as occupied
+    await db.slots.update(5, {
+      occupied: true,
+      vehicleNumber: 'KA01MN1234',
       userName: 'customer1',
       entryTime: dummyBookings[0].entryTime
     });
-    
-    await db.slots.update(15, { 
-      occupied: true, 
-      vehicleNumber: 'KA04EF3456', 
+
+    await db.slots.update(15, {
+      occupied: true,
+      vehicleNumber: 'KA04EF3456',
       userName: 'customer2',
       entryTime: dummyBookings[3].entryTime
     });
 
     console.log('Dummy bookings created successfully:', dummyBookings.length);
-    
     return dummyBookings;
   } catch (error) {
     console.error('Error creating dummy bookings:', error);
     throw error;
   }
 };
+
 
 // Function to initialize all dummy data
 export const initializeDummyData = async () => {

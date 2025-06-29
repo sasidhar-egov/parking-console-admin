@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const CustomerNavbar = styled.nav`
@@ -198,14 +197,11 @@ const CustomerNavbarComponent = () => {
         </CustomerMobileToggle>
 
         <CustomerNavLinks isOpen={isOpen}>
-          <CustomerNavLink onClick={() => console.log('Navigate to home')}>
+          <CustomerNavLink onClick={() => navigate("/customer/home")}>
             Home
           </CustomerNavLink>
           <CustomerNavLink onClick={() => navigate("/customer/orders")}>
             My Orders
-          </CustomerNavLink>
-          <CustomerNavLink onClick={() => console.log('Navigate to profile')}>
-            Profile
           </CustomerNavLink>
         </CustomerNavLinks>
 

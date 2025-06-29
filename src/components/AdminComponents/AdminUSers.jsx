@@ -141,34 +141,34 @@ const adminUsersReducer = (state, action) => {
     case 'SET_LOADING':
       return { ...state, loading: action.payload };
     case 'SET_USERS':
-      return { 
-        ...state, 
-        users: action.payload, 
+      return {
+        ...state,
+        users: action.payload,
         filteredUsers: action.payload,
-        loading: false 
+        loading: false
       };
     case 'DELETE_USER':
       const updatedUsers = state.users.filter(user => user.id !== action.payload);
-      return { 
-        ...state, 
+      return {
+        ...state,
         users: updatedUsers,
-        filteredUsers: updatedUsers.filter(user => 
+        filteredUsers: updatedUsers.filter(user =>
           filterUser(user, state.searchTerm, state.roleFilter)
         )
       };
     case 'SET_SEARCH_TERM':
-      return { 
-        ...state, 
+      return {
+        ...state,
         searchTerm: action.payload,
-        filteredUsers: state.users.filter(user => 
+        filteredUsers: state.users.filter(user =>
           filterUser(user, action.payload, state.roleFilter)
         )
       };
     case 'SET_ROLE_FILTER':
-      return { 
-        ...state, 
+      return {
+        ...state,
         roleFilter: action.payload,
-        filteredUsers: state.users.filter(user => 
+        filteredUsers: state.users.filter(user =>
           filterUser(user, state.searchTerm, action.payload)
         )
       };
@@ -181,11 +181,11 @@ const adminUsersReducer = (state, action) => {
 
 const filterUser = (user, searchTerm, roleFilter) => {
   const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                       user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                       user.phone.includes(searchTerm);
-  
+    user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.phone.includes(searchTerm);
+
   const matchesRole = roleFilter === 'all' || user.role === roleFilter;
-  
+
   return matchesSearch && matchesRole;
 };
 
@@ -234,87 +234,91 @@ const AdminUsers = () => {
 
   if (state.loading) {
     return (
-      <AdminUsersContainer>
-        <AdminNavbar currentPage="users"/>
-        <AdminTitle>Loading Users...</AdminTitle>
-      </AdminUsersContainer>
+      <>
+        <AdminNavbar currentPage="users" />
+        <AdminUsersContainer>
+          <AdminTitle>Loading Users...</AdminTitle>
+        </AdminUsersContainer>
+      </>
     );
   }
 
   return (
-    <AdminUsersContainer>
-        <AdminNavbar currentPage="users"/>
-      <AdminTitle>User Management</AdminTitle>
-      
-      <AdminSearchContainer>
-        <AdminSearchInput
-          type="text"
-          placeholder="Search users by name, username, or phone..."
-          value={state.searchTerm}
-          onChange={handleSearchChange}
-        />
-        <AdminFilterButtons>
-          <AdminFilterButton 
-            active={state.roleFilter === 'all'}
-            onClick={() => handleRoleFilter('all')}
-          >
-            All Users
-          </AdminFilterButton>
-          <AdminFilterButton 
-            active={state.roleFilter === 'customer'}
-            onClick={() => handleRoleFilter('customer')}
-          >
-            Regular Users
-          </AdminFilterButton>
-          <AdminFilterButton 
-            active={state.roleFilter === 'staff'}
-            onClick={() => handleRoleFilter('staff')}
-          >
-            Staff
-          </AdminFilterButton>
-          <AdminFilterButton 
-            active={state.roleFilter === 'admin'}
-            onClick={() => handleRoleFilter('admin')}
-          >
-            Admins
-          </AdminFilterButton>
-        </AdminFilterButtons>
-      </AdminSearchContainer>
+    <>
+      <AdminNavbar currentPage="users" />
+      <AdminUsersContainer>
+        <AdminTitle>User Management</AdminTitle>
 
-      {state.filteredUsers.length === 0 ? (
-        <AdminEmptyState>
-          <h3>No users found</h3>
-          <p>Try adjusting your search or filter criteria.</p>
-        </AdminEmptyState>
-      ) : (
-        <AdminUsersGrid>
-          {state.filteredUsers.map(user => (
-            <AdminUserCard key={user.id}>
-              {user.role !== 'admin' && (
-                <AdminDeleteButton onClick={() => handleDeleteUser(user.id, user.role)}>
-                  ×
-                </AdminDeleteButton>
-              )}
-              <AdminUserName>{user.name}</AdminUserName>
-              <AdminUserInfo>
-                <AdminUserLabel>Username:</AdminUserLabel>
-                <span>{user.username}</span>
-              </AdminUserInfo>
-              <AdminUserInfo>
-                <AdminUserLabel>Phone:</AdminUserLabel>
-                <span>{user.phone}</span>
-              </AdminUserInfo>
-              <AdminUserInfo>
-                <AdminUserLabel>Role:</AdminUserLabel>
-                <AdminRoleBadge role={user.role}>
-                  {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
-                </AdminRoleBadge>
-              </AdminUserInfo>
-            </AdminUserCard>
-          ))}
-        </AdminUsersGrid>
-      )}
-    </AdminUsersContainer>
+        <AdminSearchContainer>
+          <AdminSearchInput
+            type="text"
+            placeholder="Search users by name, username, or phone..."
+            value={state.searchTerm}
+            onChange={handleSearchChange}
+          />
+          <AdminFilterButtons>
+            <AdminFilterButton
+              active={state.roleFilter === 'all'}
+              onClick={() => handleRoleFilter('all')}
+            >
+              All Users
+            </AdminFilterButton>
+            <AdminFilterButton
+              active={state.roleFilter === 'customer'}
+              onClick={() => handleRoleFilter('customer')}
+            >
+              Regular Users
+            </AdminFilterButton>
+            <AdminFilterButton
+              active={state.roleFilter === 'staff'}
+              onClick={() => handleRoleFilter('staff')}
+            >
+              Staff
+            </AdminFilterButton>
+            <AdminFilterButton
+              active={state.roleFilter === 'admin'}
+              onClick={() => handleRoleFilter('admin')}
+            >
+              Admins
+            </AdminFilterButton>
+          </AdminFilterButtons>
+        </AdminSearchContainer>
+
+        {state.filteredUsers.length === 0 ? (
+          <AdminEmptyState>
+            <h3>No users found</h3>
+            <p>Try adjusting your search or filter criteria.</p>
+          </AdminEmptyState>
+        ) : (
+          <AdminUsersGrid>
+            {state.filteredUsers.map(user => (
+              <AdminUserCard key={user.id}>
+                {user.role !== 'admin' && (
+                  <AdminDeleteButton onClick={() => handleDeleteUser(user.id, user.role)}>
+                    ×
+                  </AdminDeleteButton>
+                )}
+                <AdminUserName>{user.name}</AdminUserName>
+                <AdminUserInfo>
+                  <AdminUserLabel>Username:</AdminUserLabel>
+                  <span>{user.username}</span>
+                </AdminUserInfo>
+                <AdminUserInfo>
+                  <AdminUserLabel>Phone:</AdminUserLabel>
+                  <span>{user.phone}</span>
+                </AdminUserInfo>
+                <AdminUserInfo>
+                  <AdminUserLabel>Role:</AdminUserLabel>
+                  <AdminRoleBadge role={user.role}>
+                    {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                  </AdminRoleBadge>
+                </AdminUserInfo>
+              </AdminUserCard>
+            ))}
+          </AdminUsersGrid>
+        )}
+      </AdminUsersContainer>
+    </>
   );
 };
 

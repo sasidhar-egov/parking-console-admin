@@ -167,70 +167,75 @@ const AdminHome = () => {
 
   if (state.loading) {
     return (
-      <AdminHomeContainer>
-        <AdminSectionTitle>Loading Dashboard...</AdminSectionTitle>
-      </AdminHomeContainer>
+      <>
+        <AdminNavbar currentPage="home" />
+        <AdminHomeContainer>
+          <AdminSectionTitle>Loading Dashboard...</AdminSectionTitle>
+        </AdminHomeContainer>
+      </>
     );
   }
 
   return (
-    <AdminHomeContainer>
-        <AdminNavbar currentPage="home"/>
-      <AdminStatsGrid>
-        <AdminStatCard>
-          <AdminStatNumber>{state.stats.totalSlots}</AdminStatNumber>
-          <AdminStatLabel>Total Slots</AdminStatLabel>
-        </AdminStatCard>
-        <AdminStatCard>
-          <AdminStatNumber>{state.stats.occupiedSlots}</AdminStatNumber>
-          <AdminStatLabel>Occupied Slots</AdminStatLabel>
-        </AdminStatCard>
-        <AdminStatCard>
-          <AdminStatNumber>{state.stats.totalUsers}</AdminStatNumber>
-          <AdminStatLabel>Total Users</AdminStatLabel>
-        </AdminStatCard>
-        <AdminStatCard>
-          <AdminStatNumber>{state.stats.totalStaff}</AdminStatNumber>
-          <AdminStatLabel>Staff Members</AdminStatLabel>
-        </AdminStatCard>
-        <AdminStatCard>
-          <AdminStatNumber>{state.stats.activeBookings}</AdminStatNumber>
-          <AdminStatLabel>Active Bookings</AdminStatLabel>
-        </AdminStatCard>
-      </AdminStatsGrid>
+    <>
+      <AdminNavbar currentPage="home" />
+      <AdminHomeContainer>
+        <AdminStatsGrid>
+          <AdminStatCard>
+            <AdminStatNumber>{state.stats.totalSlots}</AdminStatNumber>
+            <AdminStatLabel>Total Slots</AdminStatLabel>
+          </AdminStatCard>
+          <AdminStatCard>
+            <AdminStatNumber>{state.stats.occupiedSlots}</AdminStatNumber>
+            <AdminStatLabel>Occupied Slots</AdminStatLabel>
+          </AdminStatCard>
+          <AdminStatCard>
+            <AdminStatNumber>{state.stats.totalUsers}</AdminStatNumber>
+            <AdminStatLabel>Total Users</AdminStatLabel>
+          </AdminStatCard>
+          <AdminStatCard>
+            <AdminStatNumber>{state.stats.totalStaff}</AdminStatNumber>
+            <AdminStatLabel>Staff Members</AdminStatLabel>
+          </AdminStatCard>
+          <AdminStatCard>
+            <AdminStatNumber>{state.stats.activeBookings}</AdminStatNumber>
+            <AdminStatLabel>Active Bookings</AdminStatLabel>
+          </AdminStatCard>
+        </AdminStatsGrid>
 
-      <AdminRecentSection>
-        <AdminSectionTitle>Recent Bookings</AdminSectionTitle>
-        <AdminTable>
-          <thead>
-            <tr>
-              <AdminTableHeader>Slot</AdminTableHeader>
-              <AdminTableHeader>Vehicle</AdminTableHeader>
-              <AdminTableHeader>User</AdminTableHeader>
-              <AdminTableHeader>Entry Time</AdminTableHeader>
-              <AdminTableHeader>Status</AdminTableHeader>
-              <AdminTableHeader>Amount</AdminTableHeader>
-            </tr>
-          </thead>
-          <tbody>
-            {state.recentBookings.map(booking => (
-              <tr key={booking.id}>
-                <AdminTableCell>#{booking.slotNumber}</AdminTableCell>
-                <AdminTableCell>{booking.vehicleNumber}</AdminTableCell>
-                <AdminTableCell>{booking.userName}</AdminTableCell>
-                <AdminTableCell>{formatDateTime(booking.entryTime)}</AdminTableCell>
-                <AdminTableCell>
-                  <AdminStatusBadge status={booking.status}>
-                    {booking.status}
-                  </AdminStatusBadge>
-                </AdminTableCell>
-                <AdminTableCell>₹{booking.amount || 0}</AdminTableCell>
+        <AdminRecentSection>
+          <AdminSectionTitle>Recent Bookings</AdminSectionTitle>
+          <AdminTable>
+            <thead>
+              <tr>
+                <AdminTableHeader>Slot</AdminTableHeader>
+                <AdminTableHeader>Vehicle</AdminTableHeader>
+                <AdminTableHeader>User</AdminTableHeader>
+                <AdminTableHeader>Entry Time</AdminTableHeader>
+                <AdminTableHeader>Status</AdminTableHeader>
+                <AdminTableHeader>Amount</AdminTableHeader>
               </tr>
-            ))}
-          </tbody>
-        </AdminTable>
-      </AdminRecentSection>
-    </AdminHomeContainer>
+            </thead>
+            <tbody>
+              {state.recentBookings.map(booking => (
+                <tr key={booking.id}>
+                  <AdminTableCell>#{booking.slotNumber}</AdminTableCell>
+                  <AdminTableCell>{booking.vehicleNumber}</AdminTableCell>
+                  <AdminTableCell>{booking.userName}</AdminTableCell>
+                  <AdminTableCell>{formatDateTime(booking.entryTime)}</AdminTableCell>
+                  <AdminTableCell>
+                    <AdminStatusBadge status={booking.status}>
+                      {booking.status}
+                    </AdminStatusBadge>
+                  </AdminTableCell>
+                  <AdminTableCell>₹{booking.amount || 0}</AdminTableCell>
+                </tr>
+              ))}
+            </tbody>
+          </AdminTable>
+        </AdminRecentSection>
+      </AdminHomeContainer>
+    </>
   );
 };
 
