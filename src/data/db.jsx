@@ -4,7 +4,7 @@ export const db = new Dexie('RestaurantParkingDB');
 
 db.version(1).stores({
   slots: '++id, number, occupied, &vehicleNumber, &userName, entryTime',
-  bookings: '++id, slotId, slotNumber,vehicleNumber, userName, entryTime, exitTime, status,duration,amount',
+  bookings: '++id, slotId, slotNumber,vehicleNumber, userName, bookingTime,entryTime, exitTime, status,duration,amount',
   users: '++id, &username, &phone, name, role, password'
 });
 
@@ -109,115 +109,106 @@ export const createDummySlots = async () => {
 // Function to create some dummy bookings
 // Function to create some dummy bookings
 export const createDummyBookings = async () => {
-  try {
-    const existingBookings = await db.bookings.count();
-    if (existingBookings > 0) {
-      console.log('Dummy bookings already exist');
-      return;
-    }
+  const existingBookings = await db.bookings.count();
+  if (existingBookings > 0) return;
 
-    const now = new Date();
-    const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  const now = new Date();
+  const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
-    const dummyBookings = [
-      // Active booking for customer1
-      {
-        slotId: 5,
-        slotNumber: 'P005',
-        vehicleNumber: 'KA01MN1234',
-        userName: 'customer1',
-        entryTime: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString(),
-        exitTime: new Date(now.getTime() + 2 * 60 * 60 * 1000).toISOString(),
-        status: 'active',
-        duration: '4 hours',
-        amount: 120
-      },
-      // Completed booking for customer1
-      {
-        slotId: 12,
-        slotNumber: 'P012',
-        vehicleNumber: 'KA02AB5678',
-        userName: 'customer1',
-        entryTime: new Date(yesterday.getTime() + 9 * 60 * 60 * 1000).toISOString(),
-        exitTime: new Date(yesterday.getTime() + 18 * 60 * 60 * 1000).toISOString(),
-        status: 'completed',
-        duration: '9 hours',
-        amount: 270
-      },
-      // Cancelled booking for customer1
-      {
-        slotId: 8,
-        slotNumber: 'P008',
-        vehicleNumber: 'KA03CD9012',
-        userName: 'customer1',
-        entryTime: new Date(yesterday.getTime() + 14 * 60 * 60 * 1000).toISOString(),
-        exitTime: new Date(yesterday.getTime() + 16 * 60 * 60 * 1000).toISOString(),
-        status: 'cancelled',
-        duration: '2 hours',
-        amount: 60
-      },
-      // Active booking for customer2
-      {
-        slotId: 15,
-        slotNumber: 'P015',
-        vehicleNumber: 'KA04EF3456',
-        userName: 'customer2',
-        entryTime: new Date(now.getTime() - 1 * 60 * 60 * 1000).toISOString(),
-        exitTime: new Date(now.getTime() + 3 * 60 * 60 * 1000).toISOString(),
-        status: 'active',
-        duration: '4 hours',
-        amount: 120
-      },
-      // Completed booking for customer3
-      {
-        slotId: 20,
-        slotNumber: 'P020',
-        vehicleNumber: 'KA05GH7890',
-        userName: 'customer3',
-        entryTime: new Date(yesterday.getTime() + 10 * 60 * 60 * 1000).toISOString(),
-        exitTime: new Date(yesterday.getTime() + 15 * 60 * 60 * 1000).toISOString(),
-        status: 'completed',
-        duration: '5 hours',
-        amount: 150
-      },
-      // Booked booking for customer2 (newly added)
-      {
-        slotId: 22,
-        slotNumber: 'P022',
-        vehicleNumber: 'KA06IJ4321',
-        userName: 'customer2',
-        entryTime: null,
-        exitTime: null,
-        status: 'booked',
-        duration: null,
-        amount: 0
-      }
-    ];
-
-    await db.bookings.bulkAdd(dummyBookings);
-
-    // Mark active slots as occupied
-    await db.slots.update(5, {
-      occupied: true,
+  const dummyBookings = [
+    {
+      slotId: 5,
+      slotNumber: 'P005',
       vehicleNumber: 'KA01MN1234',
       userName: 'customer1',
-      entryTime: dummyBookings[0].entryTime
-    });
-
-    await db.slots.update(15, {
-      occupied: true,
+      bookingTime: new Date(now.getTime() - 2 * 60 * 60 * 1000 - 10 * 60 * 1000).toISOString(),
+      entryTime: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString(),
+      exitTime: new Date(now.getTime() + 2 * 60 * 60 * 1000).toISOString(),
+      status: 'active',
+      duration: '4 hours',
+      amount: 120
+    },
+    {
+      slotId: 12,
+      slotNumber: 'P012',
+      vehicleNumber: 'KA02AB5678',
+      userName: 'customer1',
+      bookingTime: new Date(yesterday.getTime() + 9 * 60 * 60 * 1000 - 5 * 60 * 1000).toISOString(), // 5 min before entry
+      entryTime: new Date(yesterday.getTime() + 9 * 60 * 60 * 1000).toISOString(),
+      exitTime: new Date(yesterday.getTime() + 18 * 60 * 60 * 1000).toISOString(),
+      status: 'completed',
+      duration: '9 hours',
+      amount: 270
+    },
+    {
+      slotId: 8,
+      slotNumber: 'P008',
+      vehicleNumber: 'KA03CD9012',
+      userName: 'customer1',
+      bookingTime: new Date(yesterday.getTime() + 14 * 60 * 60 * 1000 - 7 * 60 * 1000).toISOString(),
+      entryTime: new Date(yesterday.getTime() + 14 * 60 * 60 * 1000).toISOString(),
+      exitTime: new Date(yesterday.getTime() + 16 * 60 * 60 * 1000).toISOString(),
+      status: 'cancelled',
+      duration: '2 hours',
+      amount: 60
+    },
+    {
+      slotId: 15,
+      slotNumber: 'P015',
       vehicleNumber: 'KA04EF3456',
       userName: 'customer2',
-      entryTime: dummyBookings[3].entryTime
-    });
+      bookingTime: new Date(now.getTime() - 1 * 60 * 60 * 1000 - 15 * 60 * 1000).toISOString(),
+      entryTime: new Date(now.getTime() - 1 * 60 * 60 * 1000).toISOString(),
+      exitTime: new Date(now.getTime() + 3 * 60 * 60 * 1000).toISOString(),
+      status: 'active',
+      duration: '4 hours',
+      amount: 120
+    },
+    {
+      slotId: 20,
+      slotNumber: 'P020',
+      vehicleNumber: 'KA05GH7890',
+      userName: 'customer3',
+      bookingTime: new Date(yesterday.getTime() + 10 * 60 * 60 * 1000 - 2 * 60 * 1000).toISOString(),
+      entryTime: new Date(yesterday.getTime() + 10 * 60 * 60 * 1000).toISOString(),
+      exitTime: new Date(yesterday.getTime() + 15 * 60 * 60 * 1000).toISOString(),
+      status: 'completed',
+      duration: '5 hours',
+      amount: 150
+    },
+    {
+      slotId: 22,
+      slotNumber: 'P022',
+      vehicleNumber: 'KA06IJ4321',
+      userName: 'customer2',
+      bookingTime: new Date(now).toISOString(), // Just now
+      entryTime: null,
+      exitTime: null,
+      status: 'booked',
+      duration: null,
+      amount: 0
+    }
+  ];
 
-    console.log('Dummy bookings created successfully:', dummyBookings.length);
-    return dummyBookings;
-  } catch (error) {
-    console.error('Error creating dummy bookings:', error);
-    throw error;
-  }
+  await db.bookings.bulkAdd(dummyBookings);
+
+  await db.slots.update(5, {
+    occupied: true,
+    vehicleNumber: 'KA01MN1234',
+    userName: 'customer1',
+    entryTime: dummyBookings[0].entryTime
+  });
+
+  await db.slots.update(15, {
+    occupied: true,
+    vehicleNumber: 'KA04EF3456',
+    userName: 'customer2',
+    entryTime: dummyBookings[3].entryTime
+  });
+
+  console.log('Dummy bookings created (bookingTime ≤ 20 min before entry)');
 };
+
 
 
 // Function to initialize all dummy data

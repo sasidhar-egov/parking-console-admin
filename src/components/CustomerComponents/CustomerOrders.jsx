@@ -253,6 +253,7 @@ const CustomerOrdersPage = () => {
           .equals(localStorage.getItem("username"))
           .reverse()
           .toArray();
+        console.log(orders,"hiiii");
 
         dispatch({ type: 'SET_ORDERS', payload: orders });
       } catch (error) {
@@ -261,7 +262,7 @@ const CustomerOrdersPage = () => {
     };
 
     fetchOrders();
-  },);
+  },[]);
 
   const handleCancelOrder = async (orderId) => {
     try {
@@ -279,6 +280,9 @@ const CustomerOrdersPage = () => {
   };
 
   const formatDateTime = (dateString) => {
+    if (dateString==null){
+      return ""
+    }
     const date = new Date(dateString);
     return date.toLocaleString('en-IN', {
       year: 'numeric',
@@ -344,6 +348,10 @@ const CustomerOrdersPage = () => {
                 <CustomerOrderDetail>
                   <CustomerOrderLabel>Duration</CustomerOrderLabel>
                   <CustomerOrderValue>{order.duration}</CustomerOrderValue>
+                </CustomerOrderDetail>
+                <CustomerOrderDetail>
+                  <CustomerOrderLabel>Booking Time</CustomerOrderLabel>
+                  <CustomerOrderValue>{formatDateTime(order.bookingTime)}</CustomerOrderValue>
                 </CustomerOrderDetail>
 
                 <CustomerOrderDetail>

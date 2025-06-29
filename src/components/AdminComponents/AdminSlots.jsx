@@ -202,7 +202,6 @@ const AdminSlots = () => {
     const handleAddSlot = async () => {
         if (!slotNumber.trim()) return;
 
-        console.log("hlllo");
         try {
             const existingSlot = await db.slots.where('number').equals(slotNumber).first();
             if (existingSlot) {
@@ -247,7 +246,7 @@ const AdminSlots = () => {
             </>
         );
     }
-
+    console.log(state.slots);
     return (
         <>
             <AdminNavbar currentPage="slots" />

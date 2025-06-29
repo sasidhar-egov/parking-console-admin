@@ -213,13 +213,14 @@ const BookingModal = ({
       if (isVehicleAlreadyParked) {
         throw new Error('This vehicle is already parked. Please exit first.');
       }
-
-
+      
+      
       // Additional check: verify user is not in slots table
       const userInSlots = await checkIfUserInSlots(username);
       if (userInSlots) {
         throw new Error('You are already parked in a slot. Please exit first before booking a new slot.');
       }
+      console.log("object");
 
       const now = new Date().toISOString();
 
@@ -237,7 +238,8 @@ const BookingModal = ({
         slotNumber: selectedSlot.number,
         vehicleNumber: trimmedVehicleNumber,
         userName: username,
-        entryTime: now,
+        bookingTime: now,
+        entryTime:null,
         exitTime: null,
         status: 'booked',
         duration: null,

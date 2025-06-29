@@ -642,3 +642,313 @@ export const LoadingMessage = styled.div`
   color: #666;
   margin-top: 3rem;
 `;
+
+
+
+
+
+
+//admin staff paage 
+export const  AdminStaffContainer = styled.div`
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+`;
+
+export const  AdminHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+`;
+
+
+export const  AdminButton = styled.button`
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: transform 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+  }
+`;
+
+export const  AdminStaffGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+`;
+
+export const  AdminStaffCard = styled.div`
+  background: white;
+  border-radius: 15px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  position: relative;
+  transition: transform 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-5px);
+  }
+`;
+
+export const  AdminStaffName = styled.h3`
+  margin: 0 0 0.5rem 0;
+  color: #667eea;
+  font-size: 1.3rem;
+`;
+
+export const  AdminStaffInfo = styled.div`
+  color: #6c757d;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+`;
+
+export const  AdminStaffLabel = styled.span`
+  font-weight: 500;
+  min-width: 80px;
+`;
+
+export const  AdminDeleteButton = styled.button`
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  
+  &:hover {
+    background: #c82333;
+  }
+`;
+
+export const  AdminModal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
+export const  AdminModalContent = styled.div`
+  background: white;
+  padding: 2rem;
+  border-radius: 15px;
+  width: 500px;
+  max-width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+`;
+
+export const  AdminModalTitle = styled.h3`
+  margin: 0 0 1.5rem 0;
+  color: #667eea;
+`;
+
+export const  AdminInput = styled.input`
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  
+  &:focus {
+    border-color: #667eea;
+    outline: none;
+  }
+`;
+
+export const  AdminModalButtons = styled.div`
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+`;
+
+export const  AdminCancelButton = styled.button`
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+`;
+
+
+
+//admin bookings 
+export const  AdminBookingsContainer = styled.div`
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+`;
+
+export const  AdminTitle = styled.h2`
+  color: #667eea;
+  margin-bottom: 2rem;
+`;
+
+export const  AdminFiltersContainer = styled.div`
+  background: white;
+  border-radius: 15px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+`;
+
+export const  AdminFilterRow = styled.div`
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+`;
+
+export const  AdminSearchInput = styled.input`
+  padding: 0.75rem;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 1rem;
+  min-width: 200px;
+  
+  &:focus {
+    border-color: #667eea;
+    outline: none;
+  }
+`;
+
+export const  AdminFilterSelect = styled.select`
+  padding: 0.75rem;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: white;
+  
+  &:focus {
+    border-color: #667eea;
+    outline: none;
+  }
+`;
+
+export const  AdminStatsRow = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+`;
+
+export const  AdminStatCard = styled.div`
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 15px;
+  text-align: center;
+`;
+
+export const  AdminStatNumber = styled.div`
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+`;
+
+export const  AdminStatLabel = styled.div`
+  font-size: 0.9rem;
+  opacity: 0.9;
+`;
+
+export const  AdminTableContainer = styled.div`
+  background: white;
+  border-radius: 15px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+`;
+
+export const  AdminTable = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+`;
+
+export const  AdminTableHeader = styled.th`
+  background: #f8f9fa;
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 2px solid #e9ecef;
+  color: #495057;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+`;
+
+export const  AdminTableCell = styled.td`
+  padding: 1rem;
+  border-bottom: 1px solid #e9ecef;
+  color: #495057;
+`;
+
+export const  AdminStatusBadge = styled.span`
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: ${props => {
+    switch (props.status) {
+      case 'active': return '#007bff';
+      case 'completed': return '#28a745';
+      case 'cancelled': return '#dc3545';
+      default: return '#6c757d';
+    }
+  }};
+  color: white;
+`;
+
+export const  AdminEmptyState = styled.div`
+  text-align: center;
+  color: #6c757d;
+  padding: 3rem;
+`;
+
+export const  AdminPagination = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+`;
+
+export const  AdminPageButton = styled.button`
+  background: ${props => props.active ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'white'};
+  color: ${props => props.active ? 'white' : '#667eea'};
+  border: 2px solid #667eea;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  
+  &:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;

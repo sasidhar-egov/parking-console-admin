@@ -94,6 +94,54 @@ const AdminStatusBadge = styled.span`
   color: white;
 `;
 
+
+const Card = styled.div`
+  background: white;
+  border-radius: 15px;
+  padding: 2rem;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+`;
+
+
+const Title = styled.h2`
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+`;
+
+
+
+
+const BookingCard = styled.div`
+  background: #f8f9fa;
+  border: 2px solid #e9ecef;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+`;
+
+const BookingDetail = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+
+  strong {
+    color: #333;
+  }
+`;
+
+const StatusBadge = styled.span`
+  background: ${props =>
+    props.status === 'booked' ? '#ffc107' :
+    props.status === 'active' ? '#28a745' :
+    props.status === 'completed' ? '#6c757d' : '#dc3545'};
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-size: 0.7rem;
+  font-weight: 500;
+`;
 const initialState = {
   stats: {
     totalSlots: 0,
@@ -136,7 +184,7 @@ const AdminHome = () => {
       const [slots, users, bookings] = await Promise.all([
         db.slots.toArray(),
         db.users.toArray(),
-        db.bookings.orderBy('entryTime').reverse().limit(10).toArray()
+        db.bookings.reverse().limit(20).toArray()
       ]);
 
       const occupiedSlots = slots.filter(slot => slot.occupied).length;
@@ -161,9 +209,6 @@ const AdminHome = () => {
     }
   };
 
-  const formatDateTime = (dateTime) => {
-    return new Date(dateTime).toLocaleString();
-  };
 
   if (state.loading) {
     return (
@@ -206,32 +251,39 @@ const AdminHome = () => {
         <AdminRecentSection>
           <AdminSectionTitle>Recent Bookings</AdminSectionTitle>
           <AdminTable>
-            <thead>
-              <tr>
-                <AdminTableHeader>Slot</AdminTableHeader>
-                <AdminTableHeader>Vehicle</AdminTableHeader>
-                <AdminTableHeader>User</AdminTableHeader>
-                <AdminTableHeader>Entry Time</AdminTableHeader>
-                <AdminTableHeader>Status</AdminTableHeader>
-                <AdminTableHeader>Amount</AdminTableHeader>
-              </tr>
-            </thead>
-            <tbody>
-              {state.recentBookings.map(booking => (
-                <tr key={booking.id}>
-                  <AdminTableCell>#{booking.slotNumber}</AdminTableCell>
-                  <AdminTableCell>{booking.vehicleNumber}</AdminTableCell>
-                  <AdminTableCell>{booking.userName}</AdminTableCell>
-                  <AdminTableCell>{formatDateTime(booking.entryTime)}</AdminTableCell>
-                  <AdminTableCell>
-                    <AdminStatusBadge status={booking.status}>
-                      {booking.status}
-                    </AdminStatusBadge>
-                  </AdminTableCell>
-                  <AdminTableCell>₹{booking.amount || 0}</AdminTableCell>
-                </tr>
-              ))}
-            </tbody>
+            <Card>
+            <Title>📋 Recent Bookings</Title>
+            {state.recentBookings.length === 0 ? (
+              <p>No recent bookings found.</p>
+            ) : (
+              state.recentBookings.map((booking) => (
+                <BookingCard key={booking.id}>
+                  <BookingDetail>
+                    <span><strong>Slot:</strong> {booking.slotNumber}</span>
+                    <StatusBadge status={booking.status}>
+                      {booking.status.toUpperCase()}
+                    </StatusBadge>
+                  </BookingDetail>
+                  <BookingDetail>
+                    <span><strong>Vehicle:</strong> {booking.vehicleNumber}</span>
+                    <span><strong>Customer:</strong> {booking.userName}</span>
+                  </BookingDetail>
+                  <BookingDetail>
+                    <span><strong>Duration:</strong> {booking.duration}</span>
+                    <span><strong>Amount:</strong> ₹{booking.amount}</span>
+                  </BookingDetail>
+                  {booking.entryTime && (
+                    <BookingDetail>
+                      <span><strong>Entry:</strong> {new Date(booking.entryTime).toLocaleString()}</span>
+                      {booking.exitTime && (
+                        <span><strong>Exit:</strong> {new Date(booking.exitTime).toLocaleString()}</span>
+                      )}
+                    </BookingDetail>
+                  )}
+                </BookingCard>
+              ))
+            )}
+          </Card>
           </AdminTable>
         </AdminRecentSection>
       </AdminHomeContainer>
