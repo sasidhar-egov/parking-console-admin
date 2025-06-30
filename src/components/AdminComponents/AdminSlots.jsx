@@ -226,15 +226,28 @@ const AdminSlots = () => {
     };
 
     const handleDeleteSlot = async (slotId) => {
-        if (!confirm('Are you sure you want to delete this slot?')) return;
-
         try {
+            const slot = await db.slots.get(slotId);
+
+            if (!slot) {
+                alert('Slot not found!');
+                return;
+            }
+
+            if (slot.occupied) {
+                alert('Cannot delete slot: A vehicle is currently parked in this slot.');
+                return;
+            }
+
+            const confirmDelete = confirm('Are you sure you want to delete this slot?');
+        if (!confirmDelete) return;
             await db.slots.delete(slotId);
             dispatch({ type: 'DELETE_SLOT', payload: slotId });
         } catch (error) {
             alert('Error deleting slot: ' + error.message);
         }
     };
+
 
     if (state.loading) {
         return (
