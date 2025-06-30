@@ -226,7 +226,8 @@ const BookingModal = ({
 
       // Update slot in the database
       await db.slots.update(selectedSlot.id, {
-        occupied: true,
+        occupied: false,
+        booked:true,
         vehicleNumber: trimmedVehicleNumber,
         userName: username,
         entryTime: now

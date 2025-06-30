@@ -55,9 +55,9 @@ const SlotsGrid = styled.div`
 
 const SlotCard = styled.div`
   background: ${props =>
-    props.status === 'booked' ? '#ffc107' :
-    props.status === 'active' ? '#dc3545' :
-    '#28a745'};
+    props.status === 'occupied' ? '#dc3545' :
+      props.status === 'booked' ? '#ffc107' :
+        '#28a745'};                                 
   color: white;
   padding: 1rem;
   min-height: 2rem;
@@ -93,8 +93,8 @@ const BookingDetail = styled.div`
 const StatusBadge = styled.span`
   background: ${props =>
     props.status === 'booked' ? '#ffc107' :
-    props.status === 'active' ? '#28a745' :
-    props.status === 'completed' ? '#6c757d' : '#dc3545'};
+      props.status === 'active' ? '#28a745' :
+        props.status === 'completed' ? '#6c757d' : '#dc3545'};
   color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 15px;
@@ -115,6 +115,27 @@ const RefreshButton = styled.button`
   &:hover {
     transform: translateY(-2px);
   }
+`;
+
+const Legend = styled.div`
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+`;
+
+const LegendItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+`;
+
+const LegendColor = styled.div`
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background: ${props => props.color};
 `;
 
 // Initial state & reducer
@@ -161,8 +182,8 @@ const StaffDashboard = () => {
       const bookings = await db.bookings.toArray();
 
       const occupiedSlots = slots.filter(slot => slot.occupied);
+      const bookedSlots = slots.filter(slot => slot.booked && !slot.occupied);
       const activeBookings = bookings.filter(b => b.status === 'active');
-      const bookedSlots = bookings.filter(b => b.status === 'booked');
 
       const recentBookings = await db.bookings
         .orderBy('id')
@@ -175,7 +196,7 @@ const StaffDashboard = () => {
         payload: {
           totalSlots: slots.length,
           occupiedSlots: occupiedSlots.length,
-          availableSlots: slots.length - occupiedSlots.length,
+          availableSlots: slots.length - occupiedSlots.length - bookedSlots.length,
           activeBookings: activeBookings.length,
           bookedSlots: bookedSlots.length
         }
@@ -196,11 +217,14 @@ const StaffDashboard = () => {
     loadDashboardData();
   }, []);
 
-  const getSlotStatus = (slotNumber) => {
-    const booking = state.allBookings.find(
-      (b) => b.slotNumber === slotNumber && ['booked', 'active'].includes(b.status)
-    );
-    return booking ? booking.status : 'available';
+  const getSlotStatus = (slot) => {
+    if (slot.occupied) {
+      return 'occupied'; // Red - customer has entered and is using the slot
+    } else if (slot.booked) {
+      return 'booked'; // Yellow - customer has booked but not entered yet
+    } else {
+      return 'available'; // Green - slot is free
+    }
   };
 
   return (
@@ -220,26 +244,40 @@ const StaffDashboard = () => {
             <StatNumber>{state.stats.availableSlots}</StatNumber>
             <StatLabel>Available Slots</StatLabel>
           </StatCard>
+          <StatCard gradient="#ffc107 0%, #fd7e14 100%">
+            <StatNumber>{state.stats.bookedSlots}</StatNumber>
+            <StatLabel>Booked Slots</StatLabel>
+          </StatCard>
           <StatCard gradient="#dc3545 0%, #fd7e14 100%">
             <StatNumber>{state.stats.occupiedSlots}</StatNumber>
             <StatLabel>Occupied Slots</StatLabel>
           </StatCard>
-          <StatCard gradient="#ffc107 0%, #fd7e14 100%">
+          <StatCard gradient="#17a2b8 0%, #20c997 100%">
             <StatNumber>{state.stats.activeBookings}</StatNumber>
             <StatLabel>Active Bookings</StatLabel>
-          </StatCard>
-          <StatCard gradient="#17a2b8 0%, #20c997 100%">
-            <StatNumber>{state.stats.bookedSlots}</StatNumber>
-            <StatLabel>Booked Slots</StatLabel>
           </StatCard>
         </Grid>
 
         <Grid>
           <Card>
             <Title>🅿️ Parking Slots Overview</Title>
+            <Legend>
+              <LegendItem>
+                <LegendColor color="#28a745" />
+                <span>Available</span>
+              </LegendItem>
+              <LegendItem>
+                <LegendColor color="#ffc107" />
+                <span>Booked (Not Entered)</span>
+              </LegendItem>
+              <LegendItem>
+                <LegendColor color="#dc3545" />
+                <span>Occupied (In Use)</span>
+              </LegendItem>
+            </Legend>
             <SlotsGrid>
               {state.slots.map((slot) => {
-                const status = getSlotStatus(slot.number);
+                const status = getSlotStatus(slot);
                 return (
                   <SlotCard key={slot.id} status={status}>
                     <div>{slot.number}</div>

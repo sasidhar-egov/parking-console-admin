@@ -3,8 +3,8 @@ import Dexie from 'dexie';
 export const db = new Dexie('RestaurantParkingDB');
 
 db.version(1).stores({
-  slots: '++id, number, occupied, &vehicleNumber, &userName, entryTime',
-  bookings: '++id, slotId, slotNumber,vehicleNumber, userName, bookingTime,entryTime, exitTime, status,duration,amount',
+  slots: '++id, number, occupied, booked, &vehicleNumber, &userName, entryTime',
+  bookings: '++id, slotId, slotNumber, vehicleNumber, userName, bookingTime, entryTime, exitTime, status, duration, amount',
   users: '++id, &username, &phone, name, role, password'
 });
 
@@ -89,6 +89,7 @@ export const createDummySlots = async () => {
       dummySlots.push({
         number: `P${String(i).padStart(3, '0')}`, // P001, P002, etc.
         occupied: false,
+        booked: false,
         vehicleNumber: null,
         userName: null,
         entryTime: null
@@ -107,7 +108,6 @@ export const createDummySlots = async () => {
 };
 
 // Function to create some dummy bookings
-// Function to create some dummy bookings
 export const createDummyBookings = async () => {
   const existingBookings = await db.bookings.count();
   if (existingBookings > 0) return;
@@ -116,72 +116,97 @@ export const createDummyBookings = async () => {
   const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
   const dummyBookings = [
+    // Active booking - booked 10 min ago, entered 5 min later (within 20 min limit)
     {
       slotId: 5,
       slotNumber: 'P005',
       vehicleNumber: 'KA01MN1234',
       userName: 'customer1',
-      bookingTime: new Date(now.getTime() - 2 * 60 * 60 * 1000 - 10 * 60 * 1000).toISOString(),
-      entryTime: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString(),
+      bookingTime: new Date(now.getTime() - 2 * 60 * 60 * 1000 - 10 * 60 * 1000).toISOString(), // 2h 10min ago
+      entryTime: new Date(now.getTime() - 2 * 60 * 60 * 1000 - 5 * 60 * 1000).toISOString(), // 2h 5min ago (5 min after booking)
       exitTime: new Date(now.getTime() + 2 * 60 * 60 * 1000).toISOString(),
       status: 'active',
       duration: '4 hours',
       amount: 120
     },
+    
+    // Completed booking from yesterday - booked 15 min before entry
     {
       slotId: 12,
       slotNumber: 'P012',
       vehicleNumber: 'KA02AB5678',
       userName: 'customer1',
-      bookingTime: new Date(yesterday.getTime() + 9 * 60 * 60 * 1000 - 5 * 60 * 1000).toISOString(), // 5 min before entry
+      bookingTime: new Date(yesterday.getTime() + 9 * 60 * 60 * 1000 - 15 * 60 * 1000).toISOString(), // 15 min before entry
       entryTime: new Date(yesterday.getTime() + 9 * 60 * 60 * 1000).toISOString(),
       exitTime: new Date(yesterday.getTime() + 18 * 60 * 60 * 1000).toISOString(),
       status: 'completed',
       duration: '9 hours',
       amount: 270
     },
+    
+    // Cancelled booking - booked 7 min before scheduled entry but cancelled
     {
       slotId: 8,
       slotNumber: 'P008',
       vehicleNumber: 'KA03CD9012',
       userName: 'customer1',
-      bookingTime: new Date(yesterday.getTime() + 14 * 60 * 60 * 1000 - 7 * 60 * 1000).toISOString(),
-      entryTime: new Date(yesterday.getTime() + 14 * 60 * 60 * 1000).toISOString(),
-      exitTime: new Date(yesterday.getTime() + 16 * 60 * 60 * 1000).toISOString(),
+      bookingTime: new Date(yesterday.getTime() + 14 * 60 * 60 * 1000 - 7 * 60 * 1000).toISOString(), // 7 min before
+      entryTime: null, // No entry since cancelled
+      exitTime: null,
       status: 'cancelled',
       duration: '2 hours',
-      amount: 60
+      amount: 0 // No charge for cancelled booking
     },
+    
+    // Another active booking - booked 18 min ago, entered 3 min later
     {
       slotId: 15,
       slotNumber: 'P015',
       vehicleNumber: 'KA04EF3456',
       userName: 'customer2',
-      bookingTime: new Date(now.getTime() - 1 * 60 * 60 * 1000 - 15 * 60 * 1000).toISOString(),
-      entryTime: new Date(now.getTime() - 1 * 60 * 60 * 1000).toISOString(),
+      bookingTime: new Date(now.getTime() - 1 * 60 * 60 * 1000 - 18 * 60 * 1000).toISOString(), // 1h 18min ago
+      entryTime: new Date(now.getTime() - 1 * 60 * 60 * 1000 - 15 * 60 * 1000).toISOString(), // 1h 15min ago (3 min after booking)
       exitTime: new Date(now.getTime() + 3 * 60 * 60 * 1000).toISOString(),
       status: 'active',
       duration: '4 hours',
       amount: 120
     },
+    
+    // Completed booking - booked 12 min before entry
     {
       slotId: 20,
       slotNumber: 'P020',
       vehicleNumber: 'KA05GH7890',
       userName: 'customer3',
-      bookingTime: new Date(yesterday.getTime() + 10 * 60 * 60 * 1000 - 2 * 60 * 1000).toISOString(),
+      bookingTime: new Date(yesterday.getTime() + 10 * 60 * 60 * 1000 - 12 * 60 * 1000).toISOString(), // 12 min before entry
       entryTime: new Date(yesterday.getTime() + 10 * 60 * 60 * 1000).toISOString(),
       exitTime: new Date(yesterday.getTime() + 15 * 60 * 60 * 1000).toISOString(),
       status: 'completed',
       duration: '5 hours',
       amount: 150
     },
+    
+    // Just booked slot - booked now, not entered yet
     {
       slotId: 22,
       slotNumber: 'P022',
       vehicleNumber: 'KA06IJ4321',
       userName: 'customer2',
-      bookingTime: new Date(now).toISOString(), // Just now
+      bookingTime: new Date(now.getTime() - 2 * 60 * 1000).toISOString(), // 2 minutes ago
+      entryTime: null,
+      exitTime: null,
+      status: 'booked',
+      duration: null,
+      amount: 0
+    },
+    
+    // Recently booked slot - booked 8 minutes ago, customer should arrive soon
+    {
+      slotId: 3,
+      slotNumber: 'P003',
+      vehicleNumber: 'KA07KL8765',
+      userName: 'customer3',
+      bookingTime: new Date(now.getTime() - 8 * 60 * 1000).toISOString(), // 8 minutes ago
       entryTime: null,
       exitTime: null,
       status: 'booked',
@@ -192,24 +217,45 @@ export const createDummyBookings = async () => {
 
   await db.bookings.bulkAdd(dummyBookings);
 
+  // Update slot statuses based on bookings
+  // Slot 5 - occupied (customer entered)
   await db.slots.update(5, {
     occupied: true,
+    booked: true,
     vehicleNumber: 'KA01MN1234',
     userName: 'customer1',
     entryTime: dummyBookings[0].entryTime
   });
 
+  // Slot 15 - occupied (customer entered)
   await db.slots.update(15, {
     occupied: true,
+    booked: true,
     vehicleNumber: 'KA04EF3456',
     userName: 'customer2',
     entryTime: dummyBookings[3].entryTime
   });
 
-  console.log('Dummy bookings created (bookingTime ≤ 20 min before entry)');
+  // Slot 22 - just booked (customer hasn't entered yet)
+  await db.slots.update(22, {
+    occupied: false,
+    booked: true,
+    vehicleNumber: 'KA06IJ4321',
+    userName: 'customer2',
+    entryTime: null
+  });
+
+  // Slot 3 - booked 8 minutes ago (customer should arrive within 12 more minutes)
+  await db.slots.update(3, {
+    occupied: false,
+    booked: true,
+    vehicleNumber: 'KA07KL8765',
+    userName: 'customer3',
+    entryTime: null
+  });
+
+  console.log('Dummy bookings created with proper booking-to-entry timing (≤ 20 minutes)');
 };
-
-
 
 // Function to initialize all dummy data
 export const initializeDummyData = async () => {
@@ -226,10 +272,14 @@ export const initializeDummyData = async () => {
     const summary = {
       users: await db.users.count(),
       slots: await db.slots.count(),
-      bookings: await db.bookings.count()
+      bookings: await db.bookings.count(),
+      slotsBooked: await db.slots.where('booked').equals(true).count(),
+      slotsOccupied: await db.slots.where('occupied').equals(true).count(),
+      slotsAvailable: await db.slots.where('booked').equals(false).and(slot => !slot.occupied).count()
     };
     
     console.log('Database summary:', summary);
+    return summary;
   } catch (error) {
     console.error('Error initializing dummy data:', error);
     throw error;
