@@ -137,7 +137,6 @@ const AdminBookings = () => {
   if (state.loading) {
     return (
       <>
-        <AdminNavbar currentPage="bookings" />
         <AdminBookingsContainer>
           <AdminTitle>Loading Bookings...</AdminTitle>
         </AdminBookingsContainer>
@@ -147,7 +146,6 @@ const AdminBookings = () => {
 
   return (
     <>
-      <AdminNavbar currentPage="bookings" />
       <AdminBookingsContainer>
         <AdminTitle>Bookings Management</AdminTitle>
 

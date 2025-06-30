@@ -296,7 +296,6 @@ const CustomerOrdersPage = () => {
   if (state.loading) {
     return (
       <>
-        <CustomerNavbarComponent />
         <CustomerOrdersContainer>
           <CustomerOrdersTitle>My Orders</CustomerOrdersTitle>
           <CustomerLoadingContainer>
@@ -310,7 +309,6 @@ const CustomerOrdersPage = () => {
   if (state.orders.length === 0) {
     return (
       <>
-        <CustomerNavbarComponent />
         <CustomerOrdersContainer>
           <CustomerOrdersTitle>My Orders</CustomerOrdersTitle>
           <CustomerEmptyState>
@@ -325,7 +323,6 @@ const CustomerOrdersPage = () => {
 
   return (
     <>
-      <CustomerNavbarComponent />
       <CustomerOrdersContainer>
         <CustomerOrdersTitle>My Orders</CustomerOrdersTitle>
 

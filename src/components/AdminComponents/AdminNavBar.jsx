@@ -2,6 +2,32 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
+const LogoutButton = styled.button`
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  @media (max-width: 768px) {
+    width: 100%;
+    padding: 0.75rem 1rem;
+  }
+`;
+
 const AdminNavbarContainer = styled.nav`
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 1rem;
@@ -189,6 +215,13 @@ const AdminNavbar = ({ currentPage }) => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("username")
+    localStorage.removeItem("role")
+
+    navigate("/")
+  };
+
   return (
     <AdminNavbarContainer>
       <AdminNavContent>
@@ -215,6 +248,9 @@ const AdminNavbar = ({ currentPage }) => {
               {item.label}
             </AdminNavLink>
           ))}
+          <LogoutButton onClick={handleLogout}>
+            Logout
+          </LogoutButton>
         </AdminNavLinks>
       </AdminNavContent>
     </AdminNavbarContainer>

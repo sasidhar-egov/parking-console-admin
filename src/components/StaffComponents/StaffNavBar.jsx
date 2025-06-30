@@ -214,10 +214,12 @@ const StaffNavbar = (props) => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  const handleLogout = () => {
-    localStorage.clear(); // Clear all localStorage data
-    navigate('/login'); // Redirect to login page
+    const handleLogout = () => {
+    localStorage.removeItem("username")
+    localStorage.removeItem("role")
+    navigate("/")
   };
+
 
   return (
     <NavbarContainer>

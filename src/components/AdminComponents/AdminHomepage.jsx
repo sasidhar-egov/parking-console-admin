@@ -213,7 +213,6 @@ const AdminHome = () => {
   if (state.loading) {
     return (
       <>
-        <AdminNavbar currentPage="home" />
         <AdminHomeContainer>
           <AdminSectionTitle>Loading Dashboard...</AdminSectionTitle>
         </AdminHomeContainer>
@@ -223,7 +222,6 @@ const AdminHome = () => {
 
   return (
     <>
-      <AdminNavbar currentPage="home" />
       <AdminHomeContainer>
         <AdminStatsGrid>
           <AdminStatCard>

@@ -2,7 +2,7 @@ import React, { useReducer } from 'react';
 import { db } from '../data/db';
 import { comparePassword } from '../utils/passwordEncryption';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import {
   Title,
   Form,
@@ -14,7 +14,6 @@ import {
   LinkButton,
   ErrorMessage,
   SuccessMessage,
-  Container
 } from '../styles/StyledComponents';
 
 const initialState = {
@@ -47,6 +46,7 @@ const loginReducer = (state, action) => {
 };
 
 const Login = () => {
+
   const navigate = useNavigate()
   const [state, dispatch] = useReducer(loginReducer, initialState);
   const { login } = useAuth();
@@ -84,17 +84,17 @@ const Login = () => {
         .where('username')
         .equals(state.username.toLowerCase())
         .first();
-        if (!user) {
-          dispatch({ type: 'SET_ERROR', payload: 'Invalid username or password' });
-          return;
-        }
-        
-        // Check if password exists and compare
-        if (!user.password) {
-          dispatch({ type: 'SET_ERROR', payload: 'Password not set for this account. Please contact admin.' });
-          return;
-        }
-        console.log("usernjfjhhj",state.password,user.password);
+      if (!user) {
+        dispatch({ type: 'SET_ERROR', payload: 'Invalid username or password' });
+        return;
+      }
+
+      // Check if password exists and compare
+      if (!user.password) {
+        dispatch({ type: 'SET_ERROR', payload: 'Password not set for this account. Please contact admin.' });
+        return;
+      }
+      console.log("usernjfjhhj", state.password, user.password);
 
       const isPasswordValid = await comparePassword(state.password, user.password);
 
@@ -108,7 +108,8 @@ const Login = () => {
         name: user.name,
         role: user.role,
       });
-      localStorage.setItem("username",user.username)
+      localStorage.setItem("username", user.username)
+      localStorage.setItem("role", user.role)
 
       dispatch({ type: 'SET_SUCCESS', payload: `Welcome back, ${user.name}!` });
       setTimeout(() => {
@@ -126,6 +127,12 @@ const Login = () => {
     }
   };
 
+  const role = localStorage.getItem("role");
+  const username = localStorage.getItem("username");
+
+  if (username && role) {
+    return <Navigate to={`/${role}/home`} replace />;
+  }
   return (
     <ContainerCard>
       <LoginCard>

@@ -63,7 +63,7 @@ const CustomerNavLinks = styled.div`
   gap: 2rem;
   
   @media (max-width: 768px) {
-    display: ${props => props.isOpen ? 'flex' : 'none'};
+    display: ${props => props.$isOpen ? 'flex' : 'none'};
     position: absolute;
     top: 100%;
     left: 0;
@@ -109,7 +109,7 @@ const CustomerUserSection = styled.div`
   color: white;
   
   @media (max-width: 768px) {
-    display: ${props => props.isOpen ? 'flex' : 'none'};
+    display: ${props => props.$isOpen ? 'flex' : 'none'};
     flex-direction: column;
     gap: 0.5rem;
     width: 100%;
@@ -179,9 +179,10 @@ const CustomerNavbarComponent = () => {
   };
 
   const handleLogout = () => {
-    // Handle logout logic here
-    console.log('Logging out...');
-    // You can add navigation to login page or clear user data
+    localStorage.removeItem("username")
+    localStorage.removeItem("role")
+
+    navigate("/")
   };
 
   return (
@@ -196,7 +197,7 @@ const CustomerNavbarComponent = () => {
           {isOpen ? '✕' : '☰'}
         </CustomerMobileToggle>
 
-        <CustomerNavLinks isOpen={isOpen}>
+        <CustomerNavLinks $isOpen={isOpen}>
           <CustomerNavLink onClick={() => navigate("/customer/home")}>
             Home
           </CustomerNavLink>
@@ -205,7 +206,7 @@ const CustomerNavbarComponent = () => {
           </CustomerNavLink>
         </CustomerNavLinks>
 
-        <CustomerUserSection isOpen={isOpen}>
+        <CustomerUserSection $isOpen={isOpen}>
           <CustomerUserName>Welcome, {localStorage.getItem("username")}</CustomerUserName>
           <CustomerLogoutButton onClick={handleLogout}>
             Logout

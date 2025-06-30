@@ -124,7 +124,6 @@ const AdminStaff = () => {
   if (state.loading) {
     return (
       <>
-        <AdminNavbar currentPage="staff" />
         <AdminStaffContainer>
           <AdminTitle>Loading Staff...</AdminTitle>
         </AdminStaffContainer>
@@ -134,7 +133,6 @@ const AdminStaff = () => {
 
   return (
     <>
-      <AdminNavbar currentPage="staff" />
       <AdminStaffContainer>
         <AdminHeader>
           <AdminTitle>Staff Management</AdminTitle>

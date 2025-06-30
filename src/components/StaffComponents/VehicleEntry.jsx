@@ -229,7 +229,6 @@ const VehicleEntry = () => {
 
   return (
     <>
-      <StaffNavbar currentPage="vehicle-entry"/>
       <Container>
         <Card>
           <Title>🚗 Vehicle Entry</Title>

@@ -252,7 +252,6 @@ const AdminSlots = () => {
     if (state.loading) {
         return (
             <>
-                <AdminNavbar currentPage="slots" />
                 <AdminSlotsContainer>
                     <AdminTitle>Loading Slots...</AdminTitle>
                 </AdminSlotsContainer>
@@ -262,7 +261,6 @@ const AdminSlots = () => {
     console.log(state.slots);
     return (
         <>
-            <AdminNavbar currentPage="slots" />
             <AdminSlotsContainer>
 
                 <AdminHeader>

@@ -229,7 +229,6 @@ const StaffDashboard = () => {
 
   return (
     <>
-      <StaffNavbar currentPage="home" />
       <Container>
         <RefreshButton onClick={loadDashboardData} disabled={state.loading}>
           {state.loading ? 'Loading...' : '🔄 Refresh Dashboard'}

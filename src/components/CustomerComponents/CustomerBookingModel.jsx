@@ -224,7 +224,6 @@ const BookingModal = ({
 
       const now = new Date().toISOString();
 
-      // Update slot in the database
       await db.slots.update(selectedSlot.id, {
         occupied: false,
         booked:true,

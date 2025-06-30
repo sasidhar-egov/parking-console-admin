@@ -235,7 +235,6 @@ const AdminUsers = () => {
   if (state.loading) {
     return (
       <>
-        <AdminNavbar currentPage="users" />
         <AdminUsersContainer>
           <AdminTitle>Loading Users...</AdminTitle>
         </AdminUsersContainer>
@@ -245,7 +244,6 @@ const AdminUsers = () => {
 
   return (
     <>
-      <AdminNavbar currentPage="users" />
       <AdminUsersContainer>
         <AdminTitle>User Management</AdminTitle>
 

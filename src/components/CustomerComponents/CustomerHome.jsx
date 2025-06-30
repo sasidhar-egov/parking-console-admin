@@ -177,7 +177,6 @@ const CustomerHomePage = () => {
   if (state.loading) {
     return (
       <CustomerHomeContainer>
-        <CustomerNavbarComponent/>
         <CustomerTitle>Loading parking slots...</CustomerTitle>
       </CustomerHomeContainer>
     );
@@ -185,7 +184,6 @@ const CustomerHomePage = () => {
 
   return (
     <CustomerHomeContainer>
-      <CustomerNavbarComponent/>
       <CustomerTitle>Available Parking Slots</CustomerTitle>
       
       <CustomerSlotsGrid>

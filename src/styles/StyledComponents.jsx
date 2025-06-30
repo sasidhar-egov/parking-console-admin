@@ -192,7 +192,7 @@ export const ContainerCard = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-height: 92vh;
+  min-height: 100vh;
   background: linear-gradient(135deg, #ece9f3 0%, #f8f6fa 100%);
   padding: 20px;
   margin: 0;
@@ -950,5 +950,53 @@ export const  AdminPageButton = styled.button`
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+`;
+
+
+
+export const NotFoundWrapper = styled.div`
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg,rgb(233, 226, 226) 0%,rgb(214, 211, 211) 100%);
+  color: #333;
+  font-family: 'Segoe UI', sans-serif;
+  text-align: center;
+  padding: 0 1rem;
+`;
+
+export const NotFoundTitle = styled.h1`
+  font-size: 4.5rem;
+  font-weight: 700;
+  color: #333333;
+  margin-bottom: 1rem;
+`;
+
+export const NotFoundMessage = styled.p`
+  font-size: 1.4rem;
+  color: #666666;
+  margin-bottom: 2rem;
+`;
+
+export const GoHomeButton = styled.button`
+  padding: 12px 28px;
+  font-size: 1rem;
+  background-color: #764ba2;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+
+  &:hover {
+    background-color: #5a3b85;
+  }
+
+  &:active {
+    transform: scale(0.98);
   }
 `;

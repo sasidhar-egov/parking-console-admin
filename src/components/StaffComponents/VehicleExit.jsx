@@ -256,7 +256,6 @@ const VehicleExit = () => {
 
   return (
     <>
-      <StaffNavbar currentPage="vehicle-exit" />
       <Container>
         <Card>
           <Title>🚪 Vehicle Exit</Title>
