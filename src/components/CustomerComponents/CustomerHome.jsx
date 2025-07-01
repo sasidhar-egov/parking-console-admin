@@ -95,9 +95,9 @@ const customerReducer = (state, action) => {
     case 'CLOSE_MODAL':
       return { ...state, selectedSlot: null, showModal: false };
     case 'SHOW_ALERT':
-      return { 
-        ...state, 
-        showAlert: true, 
+      return {
+        ...state,
+        showAlert: true,
         alertMessage: action.payload.message,
         alertType: action.payload.type || 'success'
       };
@@ -128,11 +128,11 @@ const CustomerHomePage = () => {
         dispatch({ type: 'SET_SLOTS', payload: allSlots });
       } catch (error) {
         console.error("Error fetching slots from DB:", error);
-        dispatch({ 
-          type: 'SHOW_ALERT', 
-          payload: { 
-            message: 'Error loading parking slots', 
-            type: 'error' 
+        dispatch({
+          type: 'SHOW_ALERT',
+          payload: {
+            message: 'Error loading parking slots',
+            type: 'error'
           }
         });
       }
@@ -141,7 +141,7 @@ const CustomerHomePage = () => {
     fetchSlots();
   }, []);
 
- 
+
 
   const handleSlotClick = (slot) => {
     if (!slot.occupied) {
@@ -151,11 +151,11 @@ const CustomerHomePage = () => {
 
   const handleBookingSuccess = (slotId) => {
     dispatch({ type: 'BOOK_SLOT', payload: slotId });
-    dispatch({ 
-      type: 'SHOW_ALERT', 
-      payload: { 
-        message: 'Slot booked successfully! 🎉', 
-        type: 'success' 
+    dispatch({
+      type: 'SHOW_ALERT',
+      payload: {
+        message: 'Slot booked successfully! 🎉',
+        type: 'success'
       }
     });
 
@@ -185,17 +185,17 @@ const CustomerHomePage = () => {
   return (
     <CustomerHomeContainer>
       <CustomerTitle>Available Parking Slots</CustomerTitle>
-      
+
       <CustomerSlotsGrid>
         {state.slots.map((slot) => (
           <CustomerSlotCard
             key={slot.id}
-            available={!slot.occupied}
+            available={!slot.booked}
             onClick={() => handleSlotClick(slot)}
           >
             <CustomerSlotNumber>{slot.number}</CustomerSlotNumber>
             <CustomerSlotStatus>
-              {slot.occupied ? 'Occupied' : 'Available'}
+              {slot.booked ? 'Occupied' : 'Available'}
             </CustomerSlotStatus>
           </CustomerSlotCard>
         ))}

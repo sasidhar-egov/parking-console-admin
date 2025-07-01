@@ -74,17 +74,13 @@ export const createDummyUsers = async () => {
 // Function to create dummy parking slots
 export const createDummySlots = async () => {
   try {
-    // Check if slots already exist
     const existingSlots = await db.slots.count();
-    if (existingSlots > 0) {
-      return;
-    }
+    if (existingSlots > 0) return;
 
-    // Create 25 parking slots
     const dummySlots = [];
-    for (let i = 1; i <= 25; i++) {
+    for (let i = 1; i <= 50; i++) {
       dummySlots.push({
-        number: `P${String(i).padStart(3, '0')}`, // P001, P002, etc.
+        number: `P${String(i).padStart(3, '0')}`,
         occupied: false,
         booked: false,
         vehicleNumber: null,
@@ -93,15 +89,14 @@ export const createDummySlots = async () => {
       });
     }
 
-    // Add slots to database
     await db.slots.bulkAdd(dummySlots);
-    
     return dummySlots;
   } catch (error) {
     console.error('Error creating dummy slots:', error);
     throw error;
   }
 };
+
 
 // Function to create some dummy bookings
 export const createDummyBookings = async () => {

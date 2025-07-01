@@ -259,7 +259,7 @@ const BookingModal = ({
       const existingSlot = await db.slots
         .where('userName')
         .equals(username)
-        .and(slot => slot.occupied === true)
+        .and(slot => slot.booked === true)
         .first();
 
       return existingSlot !== undefined;
@@ -301,10 +301,11 @@ const BookingModal = ({
       // Additional check: verify user is not in slots table
       const userInSlots = await checkIfUserInSlots(username);
       if (userInSlots) {
-        throw new Error('You are already parked in a slot. Please exit first before booking a new slot.');
+        throw new Error('You are already booked a slot. Please exit first before booking a new slot.');
       }
 
       const now = new Date().toISOString();
+      
 
       await db.slots.update(selectedSlot.id, {
         occupied: false,
