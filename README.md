@@ -60,34 +60,38 @@ Restaurants need an efficient system to manage parking spaces for their customer
 ```javascript
 // Users Table
 {
-  id: number,
-  username: string,
-  email: string,
-  password: string (hashed),
+  id: number (auto-increment),
+  username: string (unique),
+  phone: string (unique),
+  name: string,
   role: 'customer' | 'staff' | 'admin',
-  createdAt: Date
+  password: string
 }
 
-// Parking Slots Table
+// Slots Table
 {
-  id: number,
-  slotNumber: string,
-  status: 'available' | 'occupied' | 'reserved',
-  vehicleNumber: string,
-  userId: number,
-  bookedAt: Date,
-  updatedAt: Date
+  id: number (auto-increment),
+  number: string, // Format: P001, P002, etc.
+  occupied: boolean,
+  booked: boolean,
+  vehicleNumber: string (unique when assigned),
+  userName: string (unique when assigned),
+  entryTime: string (ISO date)
 }
 
-// Parking History Table
+// Bookings Table
 {
-  id: number,
+  id: number (auto-increment),
   slotId: number,
-  userId: number,
+  slotNumber: string,
   vehicleNumber: string,
-  action: 'entry' | 'exit',
-  timestamp: Date,
-  duration: number (minutes)
+  userName: string,
+  bookingTime: string (ISO date),
+  entryTime: string (ISO date),
+  exitTime: string (ISO date),
+  status: 'booked' | 'active' | 'completed' | 'cancelled',
+  duration: string,
+  amount: number
 }
 ```
 
@@ -95,14 +99,13 @@ Restaurants need an efficient system to manage parking spaces for their customer
 
 1. **Offline-First Approach**: Using IndexedDB ensures the application works without internet connectivity
 2. **Component Architecture**: Modular component structure with clear separation of concerns
-3. **State Management**: React Context API with useReducer for global state management
 4. **Real-time Updates**: Polling mechanism to ensure UI reflects current slot status
 5. **Role-Based Access Control**: Different interfaces for customers, staff, and admins
 
 ## 🚀 Setup & Installation
 
 ### **Prerequisites**
-- Node.js (version 16 or higher)
+- Node.js (version 20 or higher)
 - npm or yarn package manager
 
 ### **Installation Steps**
@@ -129,21 +132,36 @@ Restaurants need an efficient system to manage parking spaces for their customer
 
 4. **Access the application**
    - Open your browser and navigate to `http://localhost:5173`
+   - The application will automatically create the IndexedDB database and populate it with dummy data on first run
+
+### **Test Login Credentials**
+
+The application comes with pre-configured test accounts. Use these credentials to test different user roles:
+
+#### **Admin Account**
+- **Username**: `admin`
+- **Password**: `admin123`
+- **Phone**: `9876543210`
+- **Access**: Full system administration
+
+#### **Staff Account**
+- **Username**: `staff`
+- **Password**: `staff123`
+- **Phone**: `9876543211`
+- **Access**: Vehicle entry/exit management
+
+#### **Customer Accounts**
+| Username | Password | Phone | Name |
+|----------|----------|-------|------|
+| `customer1` | `customer123` | `9876543212` | John Doe |
+| `customer2` | `customer123` | `9876543213` | Jane Smith |
+| `customer3` | `customer123` | `9876543214` | Mike Johnson |
+
+> **Note**: All test credentials and dummy data are automatically created when you first run the application. Check the `src/data/db.js` file for complete dummy data setup including sample bookings and parking slot configurations.
+
+4. **Access the application**
+   - Open your browser and navigate to `http://localhost:5173`
    - The application will automatically create the IndexedDB database on first run
-
-### **Build for Production**
-```bash
-npm run build
-# or
-yarn build
-```
-
-### **Preview Production Build**
-```bash
-npm run preview
-# or
-yarn preview
-```
 
 ## 🧩 Application Features
 
@@ -164,13 +182,11 @@ yarn preview
 - 🔧 Complete system administration
 - 👥 User management (customers and staff)
 - 📈 Parking analytics and reports
-- ⚙️ System configuration
 
 ### **Core Behaviors**
 - 🚫 **Slot Conflict Prevention**: Cannot book already occupied slots
 - 🔒 **Authentication Required**: Only logged-in users can book slots
 - 🚘 **Single Active Booking**: One active slot per vehicle/user
-- 📆 **Comprehensive Logging**: Timestamped records of all activities
 - 🔄 **Real-time Updates**: Automatic UI updates using IndexedDB watchers
 - 🖥️ **Admin Control**: Full management capabilities for administrators
 
@@ -199,8 +215,6 @@ src/
 │   ├── NotFound.jsx
 │   ├── ProtectedRoute.jsx
 │   └── Register.jsx
-├── context/
-│   └── [Context providers]
 ├── data/
 │   └── db.jsx (Dexie database configuration)
 ├── styles/
@@ -224,7 +238,7 @@ src/
 7. **Network Independence**: Application designed to work offline-first
 
 ## 🔧 Development Scripts
-
+* If you are Using npm
 ```bash
 # Start development server
 npm run dev
@@ -238,6 +252,8 @@ npm run lint
 # Preview production build
 npm run preview
 ```
+* If you are Using Yarn
+```bash
 # Start development server
 yarn dev
 
@@ -249,6 +265,7 @@ yarn lint
 
 # Preview production build
 yarn preview
+```
 
 
 ## 📞 Contact
@@ -257,3 +274,5 @@ If you have any questions or suggestions, please feel free to reach out:
 
 - **Developer**: Sasidhar Jonna
 - **Email**: jonna.sasi17@gmail.com
+
+
