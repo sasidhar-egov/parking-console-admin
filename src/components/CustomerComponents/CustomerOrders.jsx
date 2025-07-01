@@ -253,7 +253,6 @@ const CustomerOrdersPage = () => {
           .equals(localStorage.getItem("username"))
           .reverse()
           .toArray();
-        console.log(orders,"hiiii");
 
         dispatch({ type: 'SET_ORDERS', payload: orders });
       } catch (error) {
@@ -271,7 +270,6 @@ const CustomerOrdersPage = () => {
 
       await db.bookings.update(orderId, { status: 'cancelled' });
       await db.slots.update(order.slotId, { vehicleNumber: null, userName: null, entryTime: null, occupied: false,booked:false });
-      console.log("hello");
 
       dispatch({ type: 'CANCEL_ORDER', payload: orderId });
     } catch (error) {

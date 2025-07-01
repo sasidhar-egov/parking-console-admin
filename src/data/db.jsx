@@ -14,7 +14,6 @@ export const createDummyUsers = async () => {
     // Check if users already exist
     const existingUsers = await db.users.count();
     if (existingUsers > 0) {
-      console.log('Dummy users already exist');
       return;
     }
 
@@ -64,7 +63,6 @@ export const createDummyUsers = async () => {
 
     // Add users to database
     await db.users.bulkAdd(dummyUsers);
-    console.log('Dummy users created successfully:', dummyUsers.length);
     
     return dummyUsers;
   } catch (error) {
@@ -79,7 +77,6 @@ export const createDummySlots = async () => {
     // Check if slots already exist
     const existingSlots = await db.slots.count();
     if (existingSlots > 0) {
-      console.log('Dummy slots already exist');
       return;
     }
 
@@ -98,7 +95,6 @@ export const createDummySlots = async () => {
 
     // Add slots to database
     await db.slots.bulkAdd(dummySlots);
-    console.log('Dummy slots created successfully:', dummySlots.length);
     
     return dummySlots;
   } catch (error) {
@@ -254,19 +250,16 @@ export const createDummyBookings = async () => {
     entryTime: null
   });
 
-  console.log('Dummy bookings created with proper booking-to-entry timing (≤ 20 minutes)');
 };
 
 // Function to initialize all dummy data
 export const initializeDummyData = async () => {
   try {
-    console.log('Initializing dummy data...');
     
     await createDummyUsers();
     await createDummySlots();
     await createDummyBookings();
     
-    console.log('All dummy data initialized successfully!');
     
     // Return summary
     const summary = {
@@ -278,7 +271,6 @@ export const initializeDummyData = async () => {
       slotsAvailable: await db.slots.where('booked').equals(false).and(slot => !slot.occupied).count()
     };
     
-    console.log('Database summary:', summary);
     return summary;
   } catch (error) {
     console.error('Error initializing dummy data:', error);
@@ -291,7 +283,6 @@ export const clearAllData = async () => {
     await db.users.clear();
     await db.slots.clear();
     await db.bookings.clear();
-    console.log('All data cleared successfully!');
   } catch (error) {
     console.error('Error clearing data:', error);
     throw error;

@@ -17,7 +17,6 @@ const CommonNotFound = () => {
     }
   };
 
-  console.log("hiiiiiiiiejn");
   return (
     <NotFoundWrapper>
       <NotFoundTitle>404</NotFoundTitle>

@@ -7,6 +7,11 @@ const Container = styled.div`
   max-width: 800px;
   margin: 2rem auto;
   padding: 0 1rem;
+
+  @media (max-width: 768px) {
+    margin: 1rem auto;
+    padding: 0 0.5rem;
+  }
 `;
 
 const Card = styled.div`
@@ -15,6 +20,16 @@ const Card = styled.div`
   padding: 2rem;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
   margin-bottom: 2rem;
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border-radius: 10px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1rem;
+  }
 `;
 
 const Title = styled.h2`
@@ -22,10 +37,23 @@ const Title = styled.h2`
   margin-bottom: 1.5rem;
   text-align: center;
   font-size: 1.8rem;
+
+  @media (max-width: 768px) {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1.3rem;
+  }
 `;
 
 const SearchSection = styled.div`
   margin-bottom: 2rem;
+
+  @media (max-width: 768px) {
+    margin-bottom: 1.5rem;
+  }
 `;
 
 const Input = styled.input`
@@ -36,10 +64,21 @@ const Input = styled.input`
   font-size: 1rem;
   margin-bottom: 1rem;
   transition: border-color 0.3s ease;
+  box-sizing: border-box;
 
   &:focus {
     outline: none;
     border-color: #667eea;
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.875rem;
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem;
+    font-size: 0.85rem;
   }
 `;
 
@@ -63,6 +102,16 @@ const Button = styled.button`
     cursor: not-allowed;
     transform: none;
   }
+
+  @media (max-width: 768px) {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+  }
 `;
 
 const BookingCard = styled.div`
@@ -71,6 +120,15 @@ const BookingCard = styled.div`
   border-radius: 10px;
   padding: 1.5rem;
   margin-bottom: 1rem;
+
+  @media (max-width: 768px) {
+    padding: 1.25rem;
+    border-radius: 8px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1rem;
+  }
 `;
 
 const BookingDetail = styled.div`
@@ -80,6 +138,20 @@ const BookingDetail = styled.div`
   
   strong {
     color: #333;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 0.75rem;
+  }
+
+  @media (min-width: 769px) {
+    align-items: center;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.9rem;
   }
 `;
 
@@ -94,6 +166,16 @@ const StatusBadge = styled.span`
   border-radius: 15px;
   font-size: 0.8rem;
   font-weight: 500;
+
+  @media (max-width: 768px) {
+    align-self: flex-start;
+    margin-top: 0.25rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+  }
 `;
 
 const Message = styled.div`
@@ -112,6 +194,30 @@ const Message = styled.div`
     props.type === 'success' ? '#c3e6cb' :
       props.type === 'error' ? '#f5c6cb' : '#bee5eb'
   };
+
+  @media (max-width: 768px) {
+    padding: 0.875rem;
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem;
+    font-size: 0.85rem;
+  }
+`;
+
+const BookingsHeader = styled.h3`
+  margin-bottom: 1rem;
+  color: #333;
+
+  @media (max-width: 768px) {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+  }
 `;
 
 const initialState = {
@@ -254,7 +360,7 @@ const VehicleEntry = () => {
 
           {state.bookings.length > 0 && (
             <div>
-              <h3>Available Bookings for Entry:</h3>
+              <BookingsHeader>Available Bookings for Entry:</BookingsHeader>
               {state.bookings.map((booking) => (
                 <BookingCard key={booking.id}>
                   <BookingDetail>

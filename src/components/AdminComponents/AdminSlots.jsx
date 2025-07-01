@@ -258,7 +258,6 @@ const AdminSlots = () => {
             </>
         );
     }
-    console.log(state.slots);
     return (
         <>
             <AdminSlotsContainer>

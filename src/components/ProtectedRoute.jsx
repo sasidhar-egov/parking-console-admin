@@ -6,7 +6,6 @@ import AdminNavbar from './AdminComponents/AdminNavBar';
 
 const ProtectedRoute = ({ allowedRole }) => {
   const role = localStorage.getItem('role');
-  console.log("object");
 
   if (!role || !localStorage.getItem("username")){
     return <Navigate to={`/`} replace />;

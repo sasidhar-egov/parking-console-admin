@@ -1,7 +1,6 @@
 import React, { useReducer } from 'react';
 import { db } from '../data/db';
 import { comparePassword } from '../utils/passwordEncryption';
-import { useAuth } from '../context/AuthContext';
 import { Navigate, useNavigate } from 'react-router-dom';
 import {
   Title,
@@ -49,7 +48,6 @@ const Login = () => {
 
   const navigate = useNavigate()
   const [state, dispatch] = useReducer(loginReducer, initialState);
-  const { login } = useAuth();
 
   const handleInputChange = (field, value) => {
     dispatch({ type: 'UPDATE_FIELD', field, value });
@@ -94,7 +92,6 @@ const Login = () => {
         dispatch({ type: 'SET_ERROR', payload: 'Password not set for this account. Please contact admin.' });
         return;
       }
-      console.log("usernjfjhhj", state.password, user.password);
 
       const isPasswordValid = await comparePassword(state.password, user.password);
 
@@ -103,11 +100,7 @@ const Login = () => {
         return;
       }
 
-      login({
-        username: user.username,
-        name: user.name,
-        role: user.role,
-      });
+
       localStorage.setItem("username", user.username)
       localStorage.setItem("role", user.role)
 

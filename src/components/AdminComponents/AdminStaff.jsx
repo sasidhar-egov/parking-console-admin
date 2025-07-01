@@ -86,8 +86,7 @@ const AdminStaff = () => {
         alert('Username already exists!');
         return;
       }
-      console.log("hiiiii");
-      console.log(await hashPassword(formData.password));
+    
       const newStaff = {
         ...formData,
         role: 'staff',

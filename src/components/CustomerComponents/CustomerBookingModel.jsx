@@ -13,6 +13,8 @@ const Modal = styled.div`
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 16px;
+  box-sizing: border-box;
 `;
 
 const ModalContent = styled.div`
@@ -22,24 +24,66 @@ const ModalContent = styled.div`
   text-align: center;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   max-width: 400px;
-  width: 90%;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  
+  @media (max-width: 768px) {
+    padding: 20px;
+    border-radius: 8px;
+    max-width: none;
+    margin: 0 8px;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 16px;
+    margin: 0 4px;
+  }
 `;
 
 const ModalTitle = styled.h2`
   color: #333;
   margin-bottom: 20px;
   font-size: 1.5rem;
+  
+  @media (max-width: 768px) {
+    font-size: 1.25rem;
+    margin-bottom: 16px;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 1.125rem;
+    margin-bottom: 12px;
+  }
 `;
 
 const ModalText = styled.p`
   color: #666;
   margin-bottom: 25px;
   font-size: 16px;
+  
+  @media (max-width: 768px) {
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
 `;
 
 const InputGroup = styled.div`
   margin-bottom: 20px;
   text-align: left;
+  
+  @media (max-width: 768px) {
+    margin-bottom: 16px;
+  }
+  
+  @media (max-width: 480px) {
+    margin-bottom: 12px;
+  }
 `;
 
 const Label = styled.label`
@@ -47,6 +91,11 @@ const Label = styled.label`
   margin-bottom: 5px;
   color: #333;
   font-weight: bold;
+  font-size: 14px;
+  
+  @media (max-width: 480px) {
+    font-size: 13px;
+  }
 `;
 
 const Input = styled.input`
@@ -65,6 +114,16 @@ const Input = styled.input`
   &.error {
     border-color: #f44336;
   }
+  
+  @media (max-width: 768px) {
+    padding: 10px;
+    font-size: 16px; /* Keep 16px to prevent zoom on iOS */
+  }
+  
+  @media (max-width: 480px) {
+    padding: 8px;
+    border-radius: 4px;
+  }
 `;
 
 const ErrorMessage = styled.p`
@@ -72,12 +131,21 @@ const ErrorMessage = styled.p`
   font-size: 14px;
   margin-top: 5px;
   margin-bottom: 0;
+  
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
 `;
 
 const ButtonGroup = styled.div`
   display: flex;
   justify-content: center;
   gap: 10px;
+  
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 8px;
+  }
 `;
 
 const Button = styled.button`
@@ -88,6 +156,7 @@ const Button = styled.button`
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s ease;
+  min-width: 100px;
 
   &.primary {
     background-color: #4CAF50;
@@ -107,6 +176,20 @@ const Button = styled.button`
     &:hover {
       background-color: #e0e0e0;
     }
+  }
+  
+  @media (max-width: 768px) {
+    padding: 10px 20px;
+    font-size: 14px;
+    min-width: 80px;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 12px 16px;
+    font-size: 16px;
+    width: 100%;
+    min-width: unset;
+    border-radius: 4px;
   }
 `;
 
@@ -220,7 +303,6 @@ const BookingModal = ({
       if (userInSlots) {
         throw new Error('You are already parked in a slot. Please exit first before booking a new slot.');
       }
-      console.log("object");
 
       const now = new Date().toISOString();
 
