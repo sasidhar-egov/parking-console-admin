@@ -296,8 +296,8 @@ const BookingModal = ({
       if (isVehicleAlreadyParked) {
         throw new Error('This vehicle is already parked. Please exit first.');
       }
-      
-      
+
+
       // Additional check: verify user is not in slots table
       const userInSlots = await checkIfUserInSlots(username);
       if (userInSlots) {
@@ -305,11 +305,11 @@ const BookingModal = ({
       }
 
       const now = new Date().toISOString();
-      
+
 
       await db.slots.update(selectedSlot.id, {
         occupied: false,
-        booked:true,
+        booked: true,
         vehicleNumber: trimmedVehicleNumber,
         userName: username,
         entryTime: now
@@ -322,7 +322,7 @@ const BookingModal = ({
         vehicleNumber: trimmedVehicleNumber,
         userName: username,
         bookingTime: now,
-        entryTime:null,
+        entryTime: null,
         exitTime: null,
         status: 'booked',
         duration: null,
@@ -347,46 +347,48 @@ const BookingModal = ({
   if (!isOpen || !selectedSlot) return null;
 
   return (
-      <Modal onClick={handleClose}>
-        <ModalContent onClick={(e) => e.stopPropagation()}>
-          <ModalTitle>Book Parking Slot</ModalTitle>
-          <ModalText>
-            Booking slot {selectedSlot.number}
-          </ModalText>
+    <Modal onClick={handleClose}>
+      <ModalContent onClick={(e) => e.stopPropagation()}>
+        <ModalTitle>Book Parking Slot</ModalTitle>
+        <ModalText>
+          Booking slot {selectedSlot.number}
+        </ModalText>
+        <p style={{ color: 'red' }}>
+          Note: Book only if you can reach the restaurant within 20 minutes. Otherwise, the booking will be cancelled automatically.
+        </p>
+        <InputGroup>
+          <Label htmlFor="vehicleNumber">Vehicle Number *</Label>
+          <Input
+            id="vehicleNumber"
+            type="text"
+            value={state.vehicleNumber}
+            onChange={(e) => dispatch({ type: 'SET_VEHICLE_NUMBER', payload: e.target.value })}
+            placeholder="Enter vehicle number (e.g., KA01AB1234)"
+            className={state.error ? 'error' : ''}
+            disabled={state.isLoading}
+            autoFocus
+          />
+          {state.error && <ErrorMessage>{state.error}</ErrorMessage>}
+        </InputGroup>
 
-          <InputGroup>
-            <Label htmlFor="vehicleNumber">Vehicle Number *</Label>
-            <Input
-              id="vehicleNumber"
-              type="text"
-              value={state.vehicleNumber}
-              onChange={(e) => dispatch({ type: 'SET_VEHICLE_NUMBER', payload: e.target.value })}
-              placeholder="Enter vehicle number (e.g., KA01AB1234)"
-              className={state.error ? 'error' : ''}
-              disabled={state.isLoading}
-              autoFocus
-            />
-            {state.error && <ErrorMessage>{state.error}</ErrorMessage>}
-          </InputGroup>
-
-          <ButtonGroup>
-            <Button
-              className="primary"
-              onClick={handleBookSlot}
-              disabled={state.isLoading || !state.vehicleNumber}
-            >
-              {state.isLoading ? 'Booking...' : 'Book Now'}
-            </Button>
-            <Button
-              className="secondary"
-              onClick={handleClose}
-              disabled={state.isLoading}
-            >
-              Cancel
-            </Button>
-          </ButtonGroup>
-        </ModalContent>
-      </Modal>
+        <ButtonGroup>
+          <Button
+            className="primary"
+            onClick={handleBookSlot}
+            disabled={state.isLoading || !state.vehicleNumber}
+          >
+            {state.isLoading ? 'Booking...' : 'Book Now'}
+          </Button>
+          <Button
+            className="secondary"
+            onClick={handleClose}
+            disabled={state.isLoading}
+          >
+            Cancel
+          </Button>
+        </ButtonGroup>
+      </ModalContent>
+    </Modal>
   );
 };
 

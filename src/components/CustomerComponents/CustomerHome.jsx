@@ -107,7 +107,7 @@ const customerReducer = (state, action) => {
       return {
         ...state,
         slots: state.slots.map(slot =>
-          slot.id === action.payload ? { ...slot, occupied: true } : slot
+          slot.id === action.payload ? { ...slot, booked: true } : slot
         ),
         showModal: false,
         selectedSlot: null
@@ -120,7 +120,7 @@ const customerReducer = (state, action) => {
 const CustomerHomePage = () => {
   const [state, dispatch] = useReducer(customerReducer, initialState);
 
-  // Fetch slots from database
+  // Fetching slots from database
   useEffect(() => {
     const fetchSlots = async () => {
       try {
@@ -144,7 +144,7 @@ const CustomerHomePage = () => {
 
 
   const handleSlotClick = (slot) => {
-    if (!slot.occupied) {
+    if (!slot.booked) {
       dispatch({ type: 'SELECT_SLOT', payload: slot });
     }
   };

@@ -184,6 +184,7 @@ const AdminStaff = () => {
                 onChange={handleInputChange}
               />
               <AdminInput
+                type='password'
                 name="phone"
                 placeholder="Phone Number"
                 value={formData.phone}

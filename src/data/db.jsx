@@ -177,19 +177,6 @@ export const createDummyBookings = async () => {
       amount: 150
     },
     
-    // Just booked slot - booked now, not entered yet
-    {
-      slotId: 22,
-      slotNumber: 'P022',
-      vehicleNumber: 'KA06IJ4321',
-      userName: 'customer2',
-      bookingTime: new Date(now.getTime() - 2 * 60 * 1000).toISOString(), // 2 minutes ago
-      entryTime: null,
-      exitTime: null,
-      status: 'booked',
-      duration: null,
-      amount: 0
-    },
     
     // Recently booked slot - booked 8 minutes ago, customer should arrive soon
     {

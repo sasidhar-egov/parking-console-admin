@@ -341,6 +341,7 @@ const VehicleExit = () => {
       // Update slot to available
       await db.slots.update(booking.slotId, {
         occupied: false,
+        booked:false,
         vehicleNumber: null,
         userName: null,
         entryTime: null
