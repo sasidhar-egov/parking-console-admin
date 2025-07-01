@@ -270,7 +270,7 @@ const CustomerOrdersPage = () => {
       if (!order) return;
 
       await db.bookings.update(orderId, { status: 'cancelled' });
-      await db.slots.update(order.slotId, { vehicleNumber: null, userName: null, entryTime: null, occupied: false });
+      await db.slots.update(order.slotId, { vehicleNumber: null, userName: null, entryTime: null, occupied: false,booked:false });
       console.log("hello");
 
       dispatch({ type: 'CANCEL_ORDER', payload: orderId });

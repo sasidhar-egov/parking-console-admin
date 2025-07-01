@@ -135,8 +135,7 @@ const App = () => {
 
         </Route>
 
-        {/* Optional default dashboard or error */}
-        <Route path="/dashboard" element={<div>hiiii</div>} />
+      
       </Routes>
     </BrowserRouter>
   );

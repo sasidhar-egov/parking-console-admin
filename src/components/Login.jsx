@@ -135,46 +135,66 @@ const Login = () => {
   }
   return (
     <ContainerCard>
-      <LoginCard>
+      <LoginCard role="main">
         <Title>Welcome Back</Title>
-        {state.error && <ErrorMessage>{state.error}</ErrorMessage>}
-        {state.success && <SuccessMessage>{state.success}</SuccessMessage>}
+        {state.error && (
+          <ErrorMessage role="alert" aria-live="polite">
+            {state.error}
+          </ErrorMessage>
+        )}
+        {state.success && (
+          <SuccessMessage role="status" aria-live="polite">
+            {state.success}
+          </SuccessMessage>
+        )}
 
         <Form>
           <InputGroup>
-            <Input
+              <Input
+              id="username"
               type="text"
               placeholder="Username"
               value={state.username}
               onChange={(e) => handleInputChange('username', e.target.value)}
               onKeyPress={handleKeyPress}
+              aria-required="true"
+              aria-invalid={state.error ? 'true' : 'false'}
+              aria-describedby={state.error ? 'error-message' : undefined}
             />
           </InputGroup>
 
           <InputGroup>
             <Input
+              id="password"
               type="password"
               placeholder="Password"
               value={state.password}
               onChange={(e) => handleInputChange('password', e.target.value)}
               onKeyDown={handleKeyPress}
+              aria-required="true"
+              aria-invalid={state.error ? 'true' : 'false'}
+              aria-describedby={state.error ? 'error-message' : undefined}
             />
           </InputGroup>
 
-          <Button onClick={handleLogin} disabled={state.loading}>
+          <Button
+            onClick={handleLogin}
+            disabled={state.loading}
+            aria-describedby={state.loading ? 'loading-status' : undefined}
+          >
             {state.loading ? 'Signing In...' : 'Sign In'}
           </Button>
         </Form>
 
-        <div style={{ textAlign: 'center', marginTop: '20px' }}>
-          <LinkButton onClick={onSwitchToForgot}>
+        <nav style={{ textAlign: 'center', marginTop: '20px' }} aria-label="Account options">
+          <LinkButton onClick={onSwitchToForgot} aria-label="Go to forgot password page">
             Forgot Password?
           </LinkButton>
           <br />
-          <LinkButton onClick={onSwitchToRegister}>
+          <LinkButton onClick={onSwitchToRegister} aria-label="Go to registration page">
             Don't have an account? Register
           </LinkButton>
-        </div>
+        </nav>
       </LoginCard>
     </ContainerCard>
   );

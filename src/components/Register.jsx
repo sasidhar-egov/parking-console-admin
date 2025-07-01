@@ -1,4 +1,3 @@
-import React, { useReducer } from 'react';
 import { db } from '../data/db';
 import { hashPassword } from '../utils/passwordEncryption';
 import {
@@ -10,20 +9,16 @@ import {
     LinkButton,
     ErrorMessage,
     SuccessMessage,
-    RoleGrid,
-    RoleCard,
-    RoleIcon,
-    RoleLabel,
     ContainerCard,
     LoginCard
 } from '../styles/StyledComponents';
 import { useNavigate } from 'react-router-dom';
+import { useReducer } from 'react';
 
 const initialState = {
     username: '',
     name: '',
     phone: '',
-    role: 'customer',
     password: '',
     confirmPassword: '',
     error: '',
@@ -93,7 +88,7 @@ const Register = () => {
         dispatch({ type: 'SET_LOADING', payload: true });
 
         try {
-            // Check if username already exists
+            // Checking if username already exists
             const existingUser = await db.users
                 .where('username')
                 .equals(state.username.toLowerCase())
@@ -104,7 +99,7 @@ const Register = () => {
                 return;
             }
 
-            // Check if phone already exists
+            // Checking if phone already exists
             const existingPhone = await db.users
                 .where('phone')
                 .equals(state.phone)
@@ -119,7 +114,7 @@ const Register = () => {
                 username: state.username.toLowerCase(),
                 name: state.name.trim(),
                 phone: state.phone,
-                role: state.role
+                role: "customer"
             };
 
             if (state.password.trim()) {
@@ -138,97 +133,73 @@ const Register = () => {
         }
     };
 
-    const roleOptions = [
-        { value: 'customer', label: 'Customer', icon: '🚗' },
-        { value: 'staff', label: 'Staff', icon: '👨‍💼' },
-        { value: 'admin', label: 'Admin', icon: '👑' }
-    ];
-
     return (
         <ContainerCard>
             <LoginCard>
-            <Title>Create Account</Title>
-            {state.error && <ErrorMessage>{state.error}</ErrorMessage>}
-            {state.success && <SuccessMessage>{state.success}</SuccessMessage>}
+                <Title>Create Account</Title>
+                {state.error && <ErrorMessage>{state.error}</ErrorMessage>}
+                {state.success && <SuccessMessage>{state.success}</SuccessMessage>}
 
-            <Form>
-                <InputGroup>
-                    <Input
-                        type="text"
-                        placeholder="Full Name *"
-                        value={state.name}
-                        onChange={(e) => handleInputChange('name', e.target.value)}
-                    />
-                </InputGroup>
+                <Form>
+                    <InputGroup>
+                        <Input
+                            type="text"
+                            placeholder="Full Name *"
+                            value={state.name}
+                            onChange={(e) => handleInputChange('name', e.target.value)}
+                        />
+                    </InputGroup>
 
-                <InputGroup>
-                    <Input
-                        type="text"
-                        placeholder="Username *"
-                        value={state.username}
-                        onChange={(e) => handleInputChange('username', e.target.value)}
-                    />
-                </InputGroup>
+                    <InputGroup>
+                        <Input
+                            type="text"
+                            placeholder="Username *"
+                            value={state.username}
+                            onChange={(e) => handleInputChange('username', e.target.value)}
+                        />
+                    </InputGroup>
 
-                <InputGroup>
-                    <Input
-                        type="phone"
-                        placeholder="Phone Number (10 digits) *"
-                        value={state.phone}
-                        onChange={(e) => handleInputChange('phone', e.target.value)}
-                        maxLength="10"
-                    />
-                </InputGroup>
+                    <InputGroup>
+                        <Input
+                            type="phone"
+                            placeholder="Phone Number (10 digits) *"
+                            value={state.phone}
+                            onChange={(e) => handleInputChange('phone', e.target.value)}
+                            maxLength="10"
+                        />
+                    </InputGroup>
 
-                <div>
-                    <label style={{ color: '#666', fontSize: '14px', marginBottom: '10px', display: 'block' }}>
-                        Select Role:
-                    </label>
-                    <RoleGrid>
-                        {roleOptions.map(option => (
-                            <RoleCard
-                                key={option.value}
-                                selected={state.role === option.value}
-                                onClick={() => handleInputChange('role', option.value)}
-                            >
-                                <RoleIcon>{option.icon}</RoleIcon>
-                                <RoleLabel>{option.label}</RoleLabel>
-                            </RoleCard>
-                        ))}
-                    </RoleGrid>
-                </div>
-
-                <InputGroup>
-                    <Input
-                        type="password"
-                        placeholder="Password (optional, min 6 characters)"
-                        value={state.password}
-                        onChange={(e) => handleInputChange('password', e.target.value)}
-                    />
-                </InputGroup>
-
-                {state.password && (
                     <InputGroup>
                         <Input
                             type="password"
-                            placeholder="Confirm Password"
-                            value={state.confirmPassword}
-                            onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                            placeholder="Password (optional, min 6 characters)"
+                            value={state.password}
+                            onChange={(e) => handleInputChange('password', e.target.value)}
                         />
                     </InputGroup>
-                )}
 
-                <Button onClick={handleRegister} disabled={state.loading}>
-                    {state.loading ? 'Creating Account...' : 'Create Account'}
-                </Button>
-            </Form>
+                    {state.password && (
+                        <InputGroup>
+                            <Input
+                                type="password"
+                                placeholder="Confirm Password"
+                                value={state.confirmPassword}
+                                onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                            />
+                        </InputGroup>
+                    )}
 
-            <div style={{ textAlign: 'center', marginTop: '20px' }}>
-                <LinkButton onClick={onSwitchToLogin}>
-                    Already have an account? Sign In
-                </LinkButton>
-            </div>
-        </LoginCard>
+                    <Button onClick={handleRegister} disabled={state.loading}>
+                        {state.loading ? 'Creating Account...' : 'Create Account'}
+                    </Button>
+                </Form>
+
+                <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                    <LinkButton onClick={onSwitchToLogin}>
+                        Already have an account? Sign In
+                    </LinkButton>
+                </div>
+            </LoginCard>
         </ContainerCard>
     );
 };

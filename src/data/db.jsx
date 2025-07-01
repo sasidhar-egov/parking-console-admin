@@ -31,7 +31,7 @@ export const createDummyUsers = async () => {
       
       // Staff user
       {
-        username: 'staff1',
+        username: 'staff',
         phone: '9876543211',
         name: 'Staff Member',
         role: 'staff',
