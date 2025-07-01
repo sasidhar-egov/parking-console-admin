@@ -238,37 +238,22 @@ npm run lint
 # Preview production build
 npm run preview
 ```
+# Start development server
+yarn dev
 
-## 🌟 Future Enhancements
+# Build for production
+yarn build
 
-- 📱 Progressive Web App (PWA) capabilities
-- 🔔 Push notifications for booking confirmations
-- 💳 Payment integration for parking fees
-- 📊 Advanced analytics and reporting
-- 🚗 License plate recognition integration
-- 🌐 Multi-restaurant support
-- 📱 Mobile-responsive improvements
+# Run ESLint
+yarn lint
 
-## 🤝 Contributing
+# Preview production build
+yarn preview
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 📞 Contact
 
 If you have any questions or suggestions, please feel free to reach out:
 
-- **Project Repository**: [GitHub Link]
-- **Developer**: [Your Name]
-- **Email**: [Your Email]
-
----
-
-**🎯 Submission Date**: Tuesday, July 1st, 2025 EOD
+- **Developer**: Sasidhar Jonna
+- **Email**: jonna.sasi17@gmail.com
