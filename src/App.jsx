@@ -22,8 +22,8 @@ const App = () => {
   const fetchDummyData = async () => {
     const userCount = await db.users.count();
     if (userCount === 0) {
-      clearAllData();
-      initializeDummyData();
+      await clearAllData();
+      await initializeDummyData();
     }
   };
 
